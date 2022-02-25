@@ -25,6 +25,11 @@
 
 namespace local_rocketchat\events\observers;
 
+use local_rocketchat\client;
+use local_rocketchat\integration\users;
+use local_rocketchat\sync;
+use local_rocketchat\utilities;
+
 defined('MOODLE_INTERNAL') || die;
 
 class user_enrolment_updated {
@@ -35,9 +40,9 @@ class user_enrolment_updated {
      * @throws \dml_exception
      */
     public static function call($event) {
-        $data = \local_rocketchat\utilities::access_protected($event, 'data');
+        $data = utilities::access_protected($event, 'data');
 
-        if (\local_rocketchat\sync::is_event_based_sync_on_course($data['courseid'])) {
+        if (sync::is_event_based_sync_on_course($data['courseid'])) {
             self::sync_enrolment_status($data['objectid']);
         }
     }
@@ -47,21 +52,12 @@ class user_enrolment_updated {
      * @throws \dml_exception
      */
     private static function sync_enrolment_status($userenrolmentid) {
-        global $DB;
-
-        $client = new \local_rocketchat\client();
+        $client = new client();
         if (!$client->authenticated) {
             return;
         }
 
-        $userapi = new \local_rocketchat\integration\users($client);
-        $userenrolment = $DB->get_record('user_enrolments', ['id' => $userenrolmentid]);
-
-        $isactive = false;
-        if ($userenrolment->status !== '1') {
-            $isactive = true;
-        }
-
-        $userapi->update_user_activity($userenrolment->userid, $isactive);
+        $userapi = new users($client);
+        $userapi->update_user_activity($userenrolmentid);
     }
 }

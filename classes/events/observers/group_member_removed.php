@@ -25,6 +25,11 @@
 
 namespace local_rocketchat\events\observers;
 
+use local_rocketchat\client;
+use local_rocketchat\integration\subscriptions;
+use local_rocketchat\sync;
+use local_rocketchat\utilities;
+
 defined('MOODLE_INTERNAL') || die;
 
 class group_member_removed {
@@ -36,9 +41,9 @@ class group_member_removed {
      * @throws \coding_exception
      */
     public static function call($event) {
-        $data = \local_rocketchat\utilities::access_protected($event, 'data');
+        $data = utilities::access_protected($event, 'data');
 
-        if (\local_rocketchat\sync::is_event_based_sync_on_course($data['courseid'])) {
+        if (sync::is_event_based_sync_on_course($data['courseid'])) {
             self::remove_subscription($data);
         }
     }
@@ -49,17 +54,15 @@ class group_member_removed {
      * @throws \dml_exception
      */
     private static function remove_subscription($data) {
-        global $DB;
+        $client = new client();
 
-        $client = new \local_rocketchat\client();
         if (!$client->authenticated) {
             return;
         }
 
-        $group = $DB->get_record('groups', array('id' => $data['objectid']));
-        $user = $DB->get_record('user', array('id' => $data['relateduserid']));
+        list ($user, $group) = utilities::get_user_and_group_by_event_data($data);
 
-        $subscriptionapi = new \local_rocketchat\integration\subscriptions($client);
+        $subscriptionapi = new subscriptions($client);
         $subscriptionapi->remove_subscription_for_user($user, $group);
     }
 }

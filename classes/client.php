@@ -62,8 +62,12 @@ class client {
         return $this->url;
     }
 
-    public function authentication_headers() {
-        return array("X-Auth-Token: " . $this->authtoken, "X-User-Id: " . $this->userid);
+    public function contenttype_headers(): string {
+        return 'Content-Type: application/json';
+    }
+
+    public function authentication_headers(): array {
+        return ['X-Auth-Token: ' . $this->authtoken, 'X-User-Id: ' . $this->userid];
     }
 
     /**
@@ -89,12 +93,13 @@ class client {
      */
     private function request_login_credentials($user, $password) {
         $api = '/api/v1/login';
+
         $data = [
-            'user' => $user,
-            'password' => $password
+                'user' => $user,
+                'password' => $password
         ];
 
-        $header = array('Content-Type: application/json');
+        $header[] = $this->contenttype_headers();
 
         return utilities::make_request($this->url, $api, 'post', $data, $header);
     }

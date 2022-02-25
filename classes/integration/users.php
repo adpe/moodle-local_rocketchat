@@ -25,6 +25,9 @@
 
 namespace local_rocketchat\integration;
 
+use core_enrol_external;
+use local_rocketchat\utilities;
+
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/filelib.php');
@@ -45,7 +48,7 @@ class users {
      * @throws \moodle_exception
      */
     public function create_users_for_course($rocketchatcourse) {
-        $users = \core_enrol_external::get_enrolled_users($rocketchatcourse->course);
+        $users = core_enrol_external::get_enrolled_users($rocketchatcourse->course);
         $users = json_decode(json_encode($users), false);
 
         foreach ($users as $user) {
@@ -65,26 +68,26 @@ class users {
     public function create_user($user) {
         $api = '/api/v1/users.create';
 
-        $data = array(
+        $data = [
                 'name' => $user->firstname . ' ' . $user->lastname,
                 'username' => explode('@', $user->email)[0],
                 'email' => $user->email,
                 'verified' => true,
                 'password' => substr(str_shuffle(md5(microtime())), 0, 6),
                 'joinDefaultChannels' => false
-        );
+        ];
 
         $header = $this->client->authentication_headers();
-        array_push($header, 'Content-Type: application/json');
+        $header[] = $this->client->contenttype_headers();
 
-        $response = \local_rocketchat\utilities::make_request($this->client->url, $api, 'post', $data, $header);
+        $response = utilities::make_request($this->client->url, $api, 'post', $data, $header);
 
         if (!$response->success) {
             $object = new \stdClass();
             $object->code = get_string('user_creation', 'local_rocketchat');
             $object->error = '[ user_id - ' . $user->id . ' | email - ' . $user->email . ']' . $response->error;
 
-            array_push($this->errors, $object);
+            $this->errors[] = $object;
         }
     }
 
@@ -118,20 +121,17 @@ class users {
 
         $header = $this->client->authentication_headers();
 
-        $response = \local_rocketchat\utilities::make_request($this->client->url, $api, 'get', null, $header);
+        $response = utilities::make_request($this->client->url, $api, 'get', null, $header);
 
         return $response->users;
     }
 
     /**
-     * @param $userid
+     * @param $user
      * @return bool
      * @throws \dml_exception
      */
-    public function get_user($userid) {
-        global $DB;
-
-        $user = $DB->get_record('user', ['id' => $userid]);
+    public function get_user($user) {
         $username = $user->username;
 
         if (count(explode('@', $user->email)) > 1) {
@@ -142,7 +142,7 @@ class users {
 
         $header = $this->client->authentication_headers();
 
-        $response = \local_rocketchat\utilities::make_request($this->client->url, $api, 'get', null, $header);
+        $response = utilities::make_request($this->client->url, $api, 'get', null, $header);
 
         if ($response->success) {
             return $response->user->_id;
@@ -152,24 +152,35 @@ class users {
     }
 
     /**
-     * @param $userid
-     * @param $isactive
+     * @param $userenrolmentid
      * @throws \dml_exception
      */
-    public function update_user_activity($userid, $isactive) {
-        $rocketchatuser = $this->get_user($userid);
+    public function update_user_activity($userenrolmentid) {
+        global $DB;
+
+        $userenrolment = $DB->get_record('user_enrolments', ['id' => $userenrolmentid]);
+
+        $user = $DB->get_record('user', ['id' => $userenrolment->userid]);
+
+        $isactive = false;
+        if ($userenrolment->status !== '1') {
+            $isactive = true;
+        }
+
+        $rocketchatuser = $this->get_user($user);
 
         if ($rocketchatuser) {
             $api = '/api/v1/users.update';
+
             $data = [
                     'userId' => $rocketchatuser->_id,
                     'active' => $isactive
             ];
 
             $header = $this->client->authentication_headers();
-            array_push($header, 'Content-Type: application/json');
+            $header[] = $this->client->contenttype_headers();
 
-            \local_rocketchat\utilities::make_request($this->client->url, $api, 'post', $data, $header);
+            utilities::make_request($this->client->url, $api, 'post', $data, $header);
         }
     }
 }
