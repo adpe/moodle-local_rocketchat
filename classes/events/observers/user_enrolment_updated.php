@@ -30,8 +30,6 @@ use local_rocketchat\integration\users;
 use local_rocketchat\sync;
 use local_rocketchat\utilities;
 
-defined('MOODLE_INTERNAL') || die;
-
 class user_enrolment_updated {
 
     /**

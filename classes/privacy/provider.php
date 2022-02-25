@@ -28,8 +28,6 @@ use core_privacy\local\metadata\collection;
 use core_privacy\local\request\user_preference_provider;
 use core_privacy\local\request\writer;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Privacy Subsystem for the local_rocketchat implementation of the privacy API.
  *

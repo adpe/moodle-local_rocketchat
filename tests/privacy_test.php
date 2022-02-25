@@ -23,10 +23,10 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_rocketchat;
+
 use core_privacy\local\request\writer;
 use local_rocketchat\privacy\provider;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Unit tests for the local_rocketchat implementation of the privacy API.
@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2021 Adrian Perez <me@adrianperez.me> {@link https://adrianperez.me}
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class local_rocketchat_privacy_testcase extends \core_privacy\tests\provider_testcase {
+class privacy_test extends \core_privacy\tests\provider_testcase {
 
     /**
      * Ensure that export_user_preferences returns no data if the user has not linked the Rocket.Chat user account.

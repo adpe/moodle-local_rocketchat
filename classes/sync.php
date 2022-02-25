@@ -25,8 +25,6 @@
 
 namespace local_rocketchat;
 
-defined('MOODLE_INTERNAL') || die;
-
 class sync {
 
     private $client;
