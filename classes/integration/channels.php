@@ -206,6 +206,6 @@ class channels {
      * @return string
      */
     private function get_formatted_channel_name($courseshortname, $groupname): string {
-        return $courseshortname . '-' . str_replace(' ', '_', $groupname);
+        return str_replace(' ', '_', $courseshortname . '-' . $groupname);
     }
 }
