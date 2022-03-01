@@ -25,8 +25,6 @@
 
 namespace local_rocketchat;
 
-defined('MOODLE_INTERNAL') || die;
-
 class utilities {
 
     private $client;
@@ -213,5 +211,24 @@ class utilities {
         }
 
         return false;
+    }
+
+    /**
+     * @param $data
+     * @return array
+     * @throws \dml_exception
+     */
+    public static function get_user_and_group_by_event_data($data): array {
+        global $DB;
+
+        $user = $DB->get_record('user', [
+                'id' => $data['relateduserid']
+        ]);
+
+        $group = $DB->get_record('groups', [
+                'id' => $data['objectid']
+        ]);
+
+        return [$user, $group];
     }
 }

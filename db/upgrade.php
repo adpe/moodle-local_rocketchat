@@ -40,8 +40,6 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * Main upgrade tasks to be executed on Rocket.Chat version bump.
  *

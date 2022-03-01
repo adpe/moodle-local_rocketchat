@@ -25,6 +25,8 @@
 
 namespace local_rocketchat\integration;
 
+use local_rocketchat\utilities;
+
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/filelib.php');
@@ -81,8 +83,8 @@ class subscriptions {
     /**
      * @param $user
      * @param $group
-     * @throws \dml_exception
      * @throws \coding_exception
+     * @throws \dml_exception
      */
     public function add_subscription_for_user($user, $group) {
         $rocketchatchannel = $this->channelapi->has_channel_for_group($group);
@@ -91,23 +93,24 @@ class subscriptions {
         $subscription = $this->has_subscription($rocketchatchannel, $rocketchatuser);
 
         if ($rocketchatuser && !$subscription && $rocketchatchannel) {
-            $api = "/api/v1/groups.invite";
-            $data = array(
-                "roomId" => $rocketchatchannel,
-                "userId" => $rocketchatuser
-            );
+            $api = '/api/v1/groups.invite';
+
+            $data = [
+                    'roomId' => $rocketchatchannel,
+                    'userId' => $rocketchatuser
+            ];
 
             $header = $this->client->authentication_headers();
-            array_push($header, 'Content-Type: application/json');
+            $header[] = $this->client->contenttype_headers();
 
-            $response = \local_rocketchat\utilities::make_request($this->client->url, $api, 'post', $data, $header);
+            $response = utilities::make_request($this->client->url, $api, 'post', $data, $header);
 
             if (!$response->success) {
                 $object = new \stdClass();
                 $object->code = get_string('subscription_creation', 'local_rocketchat');
                 $object->error = $response->error;
 
-                array_push($this->errors, $object);
+                $this->errors[] = $object;
             }
         }
     }
@@ -115,8 +118,8 @@ class subscriptions {
     /**
      * @param $user
      * @param $group
-     * @throws \dml_exception
      * @throws \coding_exception
+     * @throws \dml_exception
      */
     public function remove_subscription_for_user($user, $group) {
         $rocketchatchannel = $this->channelapi->has_channel_for_group($group);
@@ -125,23 +128,24 @@ class subscriptions {
         $subscription = $this->has_subscription($rocketchatchannel, $rocketchatuser);
 
         if ($rocketchatuser && $subscription && $rocketchatchannel) {
-            $api = "/api/v1/groups.kick";
+            $api = '/api/v1/groups.kick';
+
             $data = array(
                     "roomId" => $rocketchatchannel,
                     "userId" => $rocketchatuser
             );
 
             $header = $this->client->authentication_headers();
-            array_push($header, 'Content-Type: application/json');
+            $header[] = $this->client->contenttype_headers();
 
-            $response = \local_rocketchat\utilities::make_request($this->client->url, $api, 'post', $data, $header);
+            $response = utilities::make_request($this->client->url, $api, 'post', $data, $header);
 
             if (!$response->success) {
                 $object = new \stdClass();
                 $object->code = get_string('subscription_creation', 'local_rocketchat');
                 $object->error = $response->error;
 
-                array_push($this->errors, $object);
+                $this->errors[] = $object;
             }
         }
     }
@@ -155,11 +159,11 @@ class subscriptions {
     public function has_subscription($rocketchatchannel, $rocketchatuser) {
 
         if ($rocketchatchannel && $rocketchatuser) {
-            $api = "/api/v1/groups.counters?roomId=" . $rocketchatchannel . "&userId=" . $rocketchatuser;
+            $api = '/api/v1/groups.counters?roomId=' . $rocketchatchannel . '&userId=' . $rocketchatuser;
 
             $header = $this->client->authentication_headers();
 
-            $response = \local_rocketchat\utilities::make_request($this->client->url, $api, 'get', null, $header);
+            $response = utilities::make_request($this->client->url, $api, 'get', null, $header);
 
             if ($response->success) {
                 return $response->joined;

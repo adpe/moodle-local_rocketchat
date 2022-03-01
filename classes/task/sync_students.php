@@ -25,8 +25,6 @@
 
 namespace local_rocketchat\task;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class handling sync from Moodle to Rocket.Chat.
  *

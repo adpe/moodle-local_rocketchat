@@ -16,7 +16,7 @@
 /**
  * Javascript to initialise the Rocket.Chat courses- and role integration settings.
  *
- * @package     local_rocketchat
+ * @module      local_rocketchat/rocketchat
  * @copyright   2016 GetSmarter {@link http://www.getsmarter.co.za}
  * @author      2021 Adrian Perez <me@adrianperez.me> {@link https://adrianperez.me}
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

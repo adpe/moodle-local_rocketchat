@@ -25,8 +25,6 @@
 
 namespace local_rocketchat\events\observers;
 
-defined('MOODLE_INTERNAL') || die;
-
 class user_enrolment_created {
 
     /**
