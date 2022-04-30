@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   test:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     services:
       postgres:
@@ -29,34 +29,16 @@ jobs:
       matrix:
         include:
           - php: 7.4
-            moodle-branch: MOODLE_311_STABLE
+            moodle-branch: master
             database: pgsql
           - php: 7.4
-            moodle-branch: MOODLE_311_STABLE
+            moodle-branch: master
             database: mariadb
           - php: 7.3
-            moodle-branch: MOODLE_311_STABLE
+            moodle-branch: MOODLE_400_STABLE
             database: pgsql
           - php: 7.3
-            moodle-branch: MOODLE_311_STABLE
-            database: mariadb
-          - php: 7.4
-            moodle-branch: MOODLE_310_STABLE
-            database: mariadb
-          - php: 7.3
-            moodle-branch: MOODLE_310_STABLE
-            database: mariadb
-          - php: 7.2
-            moodle-branch: MOODLE_310_STABLE
-            database: mariadb
-          - php: 7.4
-            moodle-branch: MOODLE_39_STABLE
-            database: mariadb
-          - php: 7.3
-            moodle-branch: MOODLE_39_STABLE
-            database: mariadb
-          - php: 7.2
-            moodle-branch: MOODLE_39_STABLE
+            moodle-branch: MOODLE_400_STABLE
             database: mariadb
 
     steps:
@@ -91,12 +73,12 @@ jobs:
         run: moodle-plugin-ci phplint
 
       - name: PHP Copy/Paste Detector
-        continue-on-error: true # This step will show errors but will not fail
+        continue-on-error: true
         if: ${{ always() }}
         run: moodle-plugin-ci phpcpd
 
       - name: PHP Mess Detector
-        continue-on-error: true # This step will show errors but will not fail
+        continue-on-error: true
         if: ${{ always() }}
         run: moodle-plugin-ci phpmd
 
@@ -105,7 +87,7 @@ jobs:
         run: moodle-plugin-ci codechecker --max-warnings 0
 
       - name: Moodle PHPDoc Checker
-        continue-on-error: true # This step will show errors but will not fail
+        continue-on-error: true
         if: ${{ always() }}
         run: moodle-plugin-ci phpdoc
 
