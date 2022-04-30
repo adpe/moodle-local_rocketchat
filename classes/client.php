@@ -76,7 +76,7 @@ class client {
     public function authenticate($user, $password) {
         $response = $this->request_login_credentials($user, $password);
 
-        if ($response && $response->status == 'success') {
+        if (isset($response->status) && $response->status == 'success') {
             $this->store_credentials($response->data);
             $this->authenticated = true;
         }

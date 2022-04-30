@@ -68,11 +68,18 @@ if ($linked) {
             $rocketchat = new \local_rocketchat\client();
             $response = $rocketchat->authenticate($data->email, $data->password);
 
-            set_user_preference('local_rocketchat_external_user', $data->email);
-            set_user_preference('local_rocketchat_external_token', $response->data->authToken);
+            if (is_null($response)) {
+                redirect($url, get_string('connection_failure', 'local_rocketchat'), null,
+                        \core\output\notification::NOTIFY_ERROR);
+            }
 
-            redirect($url, get_string('linkaccount_connected', 'local_rocketchat'), null,
-                    \core\output\notification::NOTIFY_SUCCESS);
+            if (isset($response->status) && $response->status == 'success') {
+                set_user_preference('local_rocketchat_external_user', $data->email);
+                set_user_preference('local_rocketchat_external_token', $response->data->authToken);
+
+                redirect($url, get_string('linkaccount_connected', 'local_rocketchat'), null,
+                        \core\output\notification::NOTIFY_SUCCESS);
+            }
         }
     }
 }
