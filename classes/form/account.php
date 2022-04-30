@@ -101,10 +101,12 @@ class account extends moodleform {
         $mform = $this->_form;
 
         $mform->addElement('text', 'email', get_string('email'));
+        $mform->addRule('email', null, 'required');
         $mform->setType('email', PARAM_EMAIL);
         $mform->setDefault('email', $email);
 
         $mform->addElement('passwordunmask', 'password', get_string('password'));
+        $mform->addRule('password', null, 'required');
         $mform->setType('password', PARAM_RAW);
     }
 }
