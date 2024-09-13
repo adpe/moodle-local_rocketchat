@@ -26,8 +26,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_rocketchat';
-$plugin->version = 2024091400;
-$plugin->requires = 2023042400;
-$plugin->release = 'v4.2-r1';
+$plugin->version = 2024091500;
+$plugin->requires = 2023100900;
+$plugin->release = 'v4.3-r1';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->supported = [402, 402];
+$plugin->supported = [403, 403];
