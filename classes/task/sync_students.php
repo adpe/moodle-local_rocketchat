@@ -34,7 +34,6 @@ namespace local_rocketchat\task;
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class sync_students extends \core\task\scheduled_task {
-
     /**
      * Holds the current timestamp.
      *

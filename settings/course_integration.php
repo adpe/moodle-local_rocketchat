@@ -62,13 +62,23 @@ foreach ($courses as $course) {
             echo html_writer::end_tag('td');
 
             echo html_writer::start_tag('td');
-            echo html_writer::checkbox('eventbasedsync', null,
-                    $rocketchatcourse->eventbasedsync, '', ['data-courseid' => $course->id]);
+            echo html_writer::checkbox(
+                'eventbasedsync',
+                null,
+                $rocketchatcourse->eventbasedsync,
+                '',
+                ['data-courseid' => $course->id]
+            );
             echo html_writer::end_tag('td');
 
             echo html_writer::start_tag('td');
-            echo html_writer::checkbox('pendingsync', null,
-                    $rocketchatcourse->pendingsync, '', ['data-courseid' => $course->id]);
+            echo html_writer::checkbox(
+                'pendingsync',
+                null,
+                $rocketchatcourse->pendingsync,
+                '',
+                ['data-courseid' => $course->id]
+            );
             echo html_writer::end_tag('td');
 
             echo html_writer::start_tag('td');
@@ -89,13 +99,15 @@ foreach ($courses as $course) {
             echo html_writer::end_tag('td');
 
             echo html_writer::start_tag('td');
-            echo html_writer::tag("button", get_string('button_sync', 'local_rocketchat'),
+            echo html_writer::tag(
+                "button",
+                get_string('button_sync', 'local_rocketchat'),
                 ["type" => "button",
                     "class" => "btn btn-default btn-xs",
                     "id" => "manual-sync",
                     "data-courseid" => $course->id,
                     "style" => "margin-bottom: 0"]
-                );
+            );
             echo html_writer::end_tag('td');
             echo html_writer::end_tag('tr');
         }

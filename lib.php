@@ -22,6 +22,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_rocketchat\utilities;
+
 /**
  * Navigation hook to add to preferences page.
  *
@@ -30,16 +32,24 @@
  * @param context_user $context
  * @param stdClass $course
  * @param context_course $coursecontext
+ * @throws coding_exception
+ * @throws dml_exception
  */
-function local_rocketchat_extend_navigation_user_settings(navigation_node $useraccount, stdClass $user, context_user $context,
-        stdClass $course, context_course $coursecontext) {
+function local_rocketchat_extend_navigation_user_settings(
+    navigation_node $useraccount,
+    stdClass $user,
+    context_user $context,
+    stdClass $course,
+    context_course $coursecontext
+): void {
     global $USER;
 
-    $rocketchat = new \local_rocketchat\client();
-    if ($rocketchat->authenticated && \local_rocketchat\utilities::is_external_connection_allowed()) {
-        if (has_capability('local/rocketchat:linkaccount', $context) && $user->id == $USER->id) {
-            $parent = $useraccount->parent->find('useraccount', navigation_node::TYPE_CONTAINER);
-            $parent->add(get_string('linkaccount', 'local_rocketchat'), new moodle_url('/local/rocketchat/linkaccount.php'));
-        }
+    if (!utilities::is_external_connection_allowed()) {
+        return;
+    }
+
+    if (has_capability('local/rocketchat:linkaccount', $context) && $user->id == $USER->id) {
+        $parent = $useraccount->parent->find('useraccount', navigation_node::TYPE_CONTAINER);
+        $parent->add(get_string('linkaccount', 'local_rocketchat'), new moodle_url('/local/rocketchat/linkaccount.php'));
     }
 }

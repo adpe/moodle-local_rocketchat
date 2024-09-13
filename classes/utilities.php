@@ -25,39 +25,34 @@
 
 namespace local_rocketchat;
 
+use core\event\group_member_added;
+use core\event\group_member_removed;
+use curl;
+use dml_exception;
+use ReflectionClass;
+use ReflectionException;
+
 /**
  * Class with general helper methods.
  */
 class utilities {
-
-    /**
-     * The API client instance.
-     *
-     * @var client
-     */
-    private $client;
-
     /**
      * Constructor.
-     *
-     * @param $client
      */
-    public function __construct($client) {
-        $this->client = $client;
+    public function __construct() {
     }
 
     /**
      * Update helper entry with pending sync status.
      *
-     * @param $courseid
+     * @param int $courseid
      * @param int $pendingsync
-     * @throws \dml_exception
+     * @throws dml_exception
      */
-    public static function set_rocketchat_course_sync($courseid, $pendingsync = 0) {
+    public static function set_rocketchat_course_sync(int $courseid, int $pendingsync = 0): void {
         global $DB;
 
         $rocketchatcourse = $DB->get_record('local_rocketchat_courses', ['course' => $courseid]);
-
         if ($rocketchatcourse) {
             $rocketchatcourse->pendingsync = $pendingsync;
             $DB->update_record('local_rocketchat_courses', $rocketchatcourse);
@@ -72,14 +67,14 @@ class utilities {
     /**
      * Update helper entry with role sync status.
      *
-     * @param $roleid
+     * @param int $roleid
      * @param int $requiresync
-     * @throws \dml_exception
+     * @throws dml_exception
      */
-    public static function set_rocketchat_role_sync($roleid, $requiresync=0) {
+    public static function set_rocketchat_role_sync(int $roleid, int $requiresync = 0): void {
         global $DB;
-        $rocketchatrole = $DB->get_record('local_rocketchat_roles', ['role' => $roleid]);
 
+        $rocketchatrole = $DB->get_record('local_rocketchat_roles', ['role' => $roleid]);
         if ($rocketchatrole) {
             $rocketchatrole->requiresync = $requiresync;
             $DB->update_record('local_rocketchat_roles', $rocketchatrole);
@@ -94,11 +89,11 @@ class utilities {
     /**
      * Update helper entry with event based sync status.
      *
-     * @param $courseid
+     * @param int $courseid
      * @param int $eventbasedsync
-     * @throws \dml_exception
+     * @throws dml_exception
      */
-    public static function set_rocketchat_event_based_sync($courseid, $eventbasedsync = 0) {
+    public static function set_rocketchat_event_based_sync(int $courseid, int $eventbasedsync = 0): void {
         global $DB;
 
         $rocketchatcourse = $DB->get_record('local_rocketchat_courses', ['course' => $courseid]);
@@ -118,9 +113,9 @@ class utilities {
      * Get all courses to process.
      *
      * @return array
-     * @throws \dml_exception
+     * @throws dml_exception
      */
-    public static function get_courses() {
+    public static function get_courses(): array {
         global $DB;
 
         $query = '
@@ -146,9 +141,9 @@ class utilities {
      * Get all roles to process.
      *
      * @return array
-     * @throws \dml_exception
+     * @throws dml_exception
      */
-    public static function get_roles() {
+    public static function get_roles(): array {
         global $DB;
 
         $query = '
@@ -173,10 +168,10 @@ class utilities {
      * @param $obj
      * @param $prop
      * @return mixed
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
-    public static function access_protected($obj, $prop) {
-        $reflection = new \ReflectionClass($obj);
+    public static function access_protected($obj, $prop): mixed {
+        $reflection = new ReflectionClass($obj);
         $property = $reflection->getProperty($prop);
         $property->setAccessible(true);
         return $property->getValue($obj);
@@ -185,16 +180,15 @@ class utilities {
     /**
      * Run API request.
      *
-     * @param $url
-     * @param $api
+     * @param string $url
+     * @param string $api
      * @param string $method
-     * @param null $data
-     * @param null $header
+     * @param array $data
+     * @param string|array $header
      * @return bool|mixed
-     * @throws \dml_exception
      */
-    public static function make_request($url, $api, $method, $data = null, $header = null) {
-        $request = new \curl();
+    public static function make_request(string $url, string $api, string $method, array $data, string|array $header): mixed {
+        $request = new curl();
 
         if (!empty($header)) {
             $request->setHeader($header);
@@ -202,18 +196,18 @@ class utilities {
 
         $url = $url . $api;
 
-        if (isset($data)) {
+        if (!empty($data)) {
             $data = json_encode($data);
-        };
+        }
 
         if ($method == 'post') {
-            if (isset($data)) {
+            if (!empty($data)) {
                 $response = $request->post($url, $data);
             } else {
                 $response = $request->post($url);
             }
         } else if ($method == 'get') {
-            if (isset($data)) {
+            if (!empty($data)) {
                 $response = $request->get($url, $data);
             } else {
                 $response = $request->get($url);
@@ -231,7 +225,7 @@ class utilities {
      * Checks if users can link their Rocket.Chat account.
      *
      * @return bool
-     * @throws \dml_exception
+     * @throws dml_exception
      */
     public static function is_external_connection_allowed(): bool {
         if (get_config('local_rocketchat', 'allowexternalconnection')) {
@@ -244,11 +238,11 @@ class utilities {
     /**
      * Gets all channels and status from user data.
      *
-     * @param $data
+     * @param array $data
      * @return array
-     * @throws \dml_exception
+     * @throws dml_exception
      */
-    public static function get_user_and_group_by_event_data($data): array {
+    public static function get_user_and_group_by_event_data(array $data): array {
         global $DB;
 
         $user = $DB->get_record('user', [

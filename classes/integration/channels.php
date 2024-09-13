@@ -25,8 +25,11 @@
 
 namespace local_rocketchat\integration;
 
+use coding_exception;
+use dml_exception;
 use local_rocketchat\client;
 use local_rocketchat\utilities;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -37,45 +40,44 @@ require_once($CFG->dirroot . '/group/externallib.php');
  * Class with channels helper methods.
  */
 class channels {
-
     /**
      * The API client.
      *
      * @var client
      */
-    private $client;
+    private client $client;
 
     /**
      * Holds the errors.
      *
      * @var array
      */
-    public $errors = [];
+    public array $errors = [];
 
     /**
      * Constructor.
      *
-     * @param $client
+     * @param client $client
      */
-    public function __construct($client) {
+    public function __construct(client $client) {
         $this->client = $client;
     }
 
     /**
      * Create channels for a single course.
      *
-     * @param $rocketchatcourse
-     * @throws \dml_exception
-     * @throws \coding_exception
+     * @param mixed $rocketchatcourse
+     * @throws dml_exception
+     * @throws coding_exception
      */
-    public function create_channels_for_course($rocketchatcourse) {
+    public function create_channels_for_course(mixed $rocketchatcourse): void {
         global $DB;
 
         $course = $DB->get_record('course', ['id' => $rocketchatcourse->course]);
         $groups = $DB->get_records('groups', ['courseid' => $course->id]);
 
         foreach ($groups as $group) {
-            if (!$this->group_requires_rocketchat_channel($group)) {
+            if (!$this->group_requires_rocketchat_channel($group->name)) {
                 continue;
             }
 
@@ -88,11 +90,11 @@ class channels {
     /**
      * Check if channel exists for a group.
      *
-     * @param $group
+     * @param mixed $group
      * @return bool
-     * @throws \dml_exception
+     * @throws dml_exception
      */
-    public function has_channel_for_group($group) {
+    public function has_channel_for_group(mixed $group): mixed {
         global $DB;
 
         $course = $DB->get_record('course', ['id' => $group->courseid]);
@@ -104,16 +106,15 @@ class channels {
     /**
      * Check if group has a private channel.
      *
-     * @param $name
-     * @return bool
-     * @throws \dml_exception
+     * @param string $name
+     * @return mixed
      */
-    public function has_private_group($name) {
+    public function has_private_group(string $name): mixed {
         $api = '/api/v1/groups.info?roomName=' . $name;
 
         $header = $this->client->authentication_headers();
 
-        $response = utilities::make_request($this->client->url, $api, 'get', null, $header);
+        $response = utilities::make_request($this->client->url, $api, 'get', [], $header);
 
         if ($response->success) {
             return $response->group->_id;
@@ -125,11 +126,11 @@ class channels {
     /**
      * Create a channel.
      *
-     * @param $channel
-     * @throws \coding_exception
-     * @throws \dml_exception
+     * @param string $channel
+     * @throws coding_exception
+     * @throws dml_exception
      */
-    private function create($channel) {
+    private function create(string $channel): void {
         if (!$this->channel_exists($channel)) {
             $this->create_channel($channel);
         }
@@ -138,11 +139,11 @@ class channels {
     /**
      * Check if channel exists.
      *
-     * @param $channelname
+     * @param string $channelname
      * @return bool
-     * @throws \dml_exception
+     * @throws dml_exception
      */
-    private function channel_exists($channelname) {
+    private function channel_exists(string $channelname): bool {
         foreach ($this->get_existing_channels() as $channel) {
             if ($channel->name == $channelname) {
                 return true;
@@ -156,15 +157,14 @@ class channels {
      * Get existing channel.
      *
      * @return mixed
-     * @throws \dml_exception
      */
-    private function get_existing_channels() {
+    private function get_existing_channels(): mixed {
         $api = '/api/v1/rooms.get';
 
         $header = $this->client->authentication_headers();
         $header[] = $this->client->contenttype_headers();
 
-        $response = utilities::make_request($this->client->url, $api, 'get', null, $header);
+        $response = utilities::make_request($this->client->url, $api, 'get', [], $header);
 
         return $response->update;
     }
@@ -172,11 +172,10 @@ class channels {
     /**
      * Create channel.
      *
-     * @param $channel
-     * @throws \coding_exception
-     * @throws \dml_exception
+     * @param string $channel
+     * @throws coding_exception
      */
-    private function create_channel($channel) {
+    private function create_channel(string $channel): void {
         $api = '/api/v1/channels.create';
 
         $data = [
@@ -189,7 +188,7 @@ class channels {
         $response = utilities::make_request($this->client->url, $api, 'post', $data, $header);
 
         if (!$response->success) {
-            $object = new \stdClass();
+            $object = new stdClass();
             $object->code = get_string('channel_creation', 'local_rocketchat');
             $object->error = $response->error;
 
@@ -208,7 +207,7 @@ class channels {
         $response = utilities::make_request($this->client->url, $api, 'post', $data, $header);
 
         if (!$response->success) {
-            $object = new \stdClass();
+            $object = new stdClass();
             $object->code = get_string('channel_creation', 'local_rocketchat');
             $object->error = $response->error;
 
@@ -219,16 +218,16 @@ class channels {
     /**
      * Check if group needs a channel.
      *
-     * @param $group
+     * @param string $groupname
      * @return bool
-     * @throws \dml_exception
+     * @throws dml_exception
      */
-    private function group_requires_rocketchat_channel($group) {
+    private function group_requires_rocketchat_channel(string $groupname): bool {
         $groupregextext = get_config('local_rocketchat', 'groupregex');
         $groupregexs = explode("\r\n", $groupregextext);
 
         foreach ($groupregexs as $regex) {
-            if (preg_match($regex, $group->name)) {
+            if (preg_match($regex, $groupname)) {
                 return true;
             }
         }
@@ -239,11 +238,11 @@ class channels {
     /**
      * Get formatted channel name by group name.
      *
-     * @param $courseshortname
-     * @param $groupname
+     * @param string $courseshortname
+     * @param string $groupname
      * @return string
      */
-    private function get_formatted_channel_name($courseshortname, $groupname): string {
+    private function get_formatted_channel_name(string $courseshortname, string $groupname): string {
         return str_replace(' ', '_', $courseshortname . '-' . $groupname);
     }
 }

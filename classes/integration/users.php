@@ -25,9 +25,14 @@
 
 namespace local_rocketchat\integration;
 
+use coding_exception;
 use core_enrol_external;
+use dml_exception;
+use invalid_parameter_exception;
 use local_rocketchat\client;
 use local_rocketchat\utilities;
+use moodle_exception;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -38,38 +43,37 @@ require_once($CFG->dirroot . '/enrol/externallib.php');
  * Class with user helper methods.
  */
 class users {
-
     /**
      * The API client.
      *
      * @var client
      */
-    private $client;
+    private client $client;
 
     /**
      * Holds the errors.
      *
      * @var array
      */
-    public $errors = [];
+    public array $errors = [];
 
     /**
      * Constructor.
      *
-     * @param $client
+     * @param client $client
      */
-    public function __construct($client) {
+    public function __construct(client $client) {
         $this->client = $client;
     }
 
     /**
      * Create users for a single course.
      *
-     * @param $rocketchatcourse
-     * @throws \invalid_parameter_exception
-     * @throws \moodle_exception
+     * @param mixed $rocketchatcourse
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
      */
-    public function create_users_for_course($rocketchatcourse) {
+    public function create_users_for_course(mixed $rocketchatcourse): void {
         $users = core_enrol_external::get_enrolled_users($rocketchatcourse->course);
         $users = json_decode(json_encode($users), false);
 
@@ -85,11 +89,10 @@ class users {
     /**
      * Create user.
      *
-     * @param $user
-     * @throws \coding_exception
-     * @throws \dml_exception
+     * @param mixed $user
+     * @throws coding_exception
      */
-    public function create_user($user) {
+    public function create_user(mixed $user): void {
         $api = '/api/v1/users.create';
 
         $data = [
@@ -107,7 +110,7 @@ class users {
         $response = utilities::make_request($this->client->url, $api, 'post', $data, $header);
 
         if (!$response->success) {
-            $object = new \stdClass();
+            $object = new stdClass();
             $object->code = get_string('user_creation', 'local_rocketchat');
             $object->error = '[ user_id - ' . $user->id . ' | email - ' . $user->email . ']' . $response->error;
 
@@ -118,11 +121,10 @@ class users {
     /**
      * Check if user exists.
      *
-     * @param $user
+     * @param mixed $user
      * @return bool
-     * @throws \dml_exception
      */
-    public function user_exists($user) {
+    public function user_exists(mixed $user): bool {
         foreach ($this->get_existing_users() as $existinguser) {
             $username = $user->username;
 
@@ -142,14 +144,13 @@ class users {
      * Get existing users.
      *
      * @return mixed
-     * @throws \dml_exception
      */
-    private function get_existing_users() {
+    private function get_existing_users(): mixed {
         $api = '/api/v1/users.list';
 
         $header = $this->client->authentication_headers();
 
-        $response = utilities::make_request($this->client->url, $api, 'get', null, $header);
+        $response = utilities::make_request($this->client->url, $api, 'get', [], $header);
 
         return $response->users;
     }
@@ -157,11 +158,10 @@ class users {
     /**
      * Get user.
      *
-     * @param $user
+     * @param mixed $user
      * @return bool
-     * @throws \dml_exception
      */
-    public function get_user($user) {
+    public function get_user(mixed $user): mixed {
         $username = $user->username;
 
         if (count(explode('@', $user->email)) > 1) {
@@ -172,7 +172,7 @@ class users {
 
         $header = $this->client->authentication_headers();
 
-        $response = utilities::make_request($this->client->url, $api, 'get', null, $header);
+        $response = utilities::make_request($this->client->url, $api, 'get', [], $header);
 
         if ($response->success) {
             return $response->user->_id;
@@ -184,10 +184,10 @@ class users {
     /**
      * Update user.
      *
-     * @param $userenrolmentid
-     * @throws \dml_exception
+     * @param int $userenrolmentid
+     * @throws dml_exception
      */
-    public function update_user_activity($userenrolmentid) {
+    public function update_user_activity(int $userenrolmentid): void {
         global $DB;
 
         $userenrolment = $DB->get_record('user_enrolments', ['id' => $userenrolmentid]);

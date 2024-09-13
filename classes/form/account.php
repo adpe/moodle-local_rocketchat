@@ -28,24 +28,26 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/formslib.php');
 
+use coding_exception;
 use html_writer;
+use local_rocketchat\client;
 use moodleform;
-use stdClass;
 
 /**
- * Form to edit backpack initial details.
+ * Form to edit the account details.
  *
  */
 class account extends moodleform {
-
     /**
      * Defines the form
+     *
+     * @throws coding_exception
      */
-    public function definition() {
+    public function definition(): void {
         global $USER;
 
         $linked = $this->_customdata['linked'];
-        $rocketchat = new \local_rocketchat\client();
+        $rocketchat = new client();
 
         $mform = $this->_form;
         $mform->addElement('hidden', 'userid', $USER->id);
@@ -53,17 +55,23 @@ class account extends moodleform {
 
         $mform->addElement('static', 'url', get_string('url'), $rocketchat->get_instance_url());
 
-        $status = html_writer::tag('span', get_string('notconnected', 'badges'),
-                ['class' => 'notconnected', 'id' => 'connection-status']);
+        $status = html_writer::tag(
+            'span',
+            get_string('notconnected', 'badges'),
+            ['class' => 'notconnected', 'id' => 'connection-status']
+        );
         if ($linked) {
-            $status = html_writer::tag('span', get_string('connected', 'badges'),
-                    ['class' => 'connected', 'id' => 'connection-status']);
+            $status = html_writer::tag(
+                'span',
+                get_string('connected', 'badges'),
+                ['class' => 'connected', 'id' => 'connection-status']
+            );
         }
 
         $mform->addElement('static', 'status', get_string('status'), $status);
 
         if ($linked) {
-            $mform->addElement('static', 'email', get_string('email'), $this->_customdata['email']);
+            $mform->addElement('static', 'email', get_string('usernameemail'), $this->_customdata['email']);
             $mform->addElement('submit', 'disconnect', get_string('disconnect', 'badges'));
         } else {
             $this->add_auth_fields($USER->email);
@@ -73,17 +81,27 @@ class account extends moodleform {
 
     /**
      * Validates form data
+     *
+     * @param array $data
+     * @param array $files
+     * @return array
+     * @throws coding_exception
      */
-    public function validation($data, $files) {
+    public function validation($data, $files): array {
         $errors = parent::validation($data, $files);
 
-        $rocketchat = new \local_rocketchat\client();
+        $rocketchat = new client();
 
         $result = $rocketchat->authenticate($data['email'], $data['password']);
         if ($result === false || !empty($result->error)) {
             $errors['email'] = get_string('linkaccount_unexpectedresult', 'local_rocketchat');
 
-            $msg = $result->message;
+            if (isset($result->message)) {
+                $msg = $result->message;
+            } else {
+                $msg = $result->error;
+            }
+
             if (!empty($msg)) {
                 $errors['email'] .= get_string('linkaccount_unexpectedmessage', 'local_rocketchat', $msg);
             }
@@ -96,13 +114,14 @@ class account extends moodleform {
      * Add Rocket.Chat specific auth details.
      *
      * @param string $email Use users email address from Moodle as placeholder.
+     * @throws coding_exception
      */
-    protected function add_auth_fields(string $email) {
+    protected function add_auth_fields(string $email): void {
         $mform = $this->_form;
 
-        $mform->addElement('text', 'email', get_string('email'));
+        $mform->addElement('text', 'email', get_string('usernameemail'));
         $mform->addRule('email', null, 'required');
-        $mform->setType('email', PARAM_EMAIL);
+        $mform->setType('email', PARAM_TEXT);
         $mform->setDefault('email', $email);
 
         $mform->addElement('passwordunmask', 'password', get_string('password'));

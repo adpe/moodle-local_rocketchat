@@ -35,7 +35,6 @@ use local_rocketchat\privacy\provider;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class privacy_test extends \core_privacy\tests\provider_testcase {
-
     /**
      * Ensure that export_user_preferences returns no data if the user has not linked the Rocket.Chat user account.
      *

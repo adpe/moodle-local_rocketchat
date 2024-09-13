@@ -24,7 +24,7 @@
  */
 
 require_once(__DIR__ . '/../../../config.php');
-require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->libdir . '/adminlib.php');
 
 admin_externalpage_setup('local_rocketchat_role_integration');
 
@@ -37,8 +37,8 @@ echo html_writer::tag('p', get_string('role_desc', 'local_rocketchat'));
 
 echo html_writer::start_tag('table', ['class' => 'admintable generaltable', 'id' => 'integrated-roles']);
 echo html_writer::start_tag('thead');
-echo html_writer::tag('th',  get_string('roletable_column_1', 'local_rocketchat'));
-echo html_writer::tag('th',  get_string('roletable_column_2', 'local_rocketchat'));
+echo html_writer::tag('th', get_string('roletable_column_1', 'local_rocketchat'));
+echo html_writer::tag('th', get_string('roletable_column_2', 'local_rocketchat'));
 echo html_writer::end_tag('thead');
 
 echo html_writer::start_tag('tbody');
@@ -54,8 +54,13 @@ foreach ($roles as $role) {
             echo html_writer::tag('td', $role->localname);
 
             echo html_writer::start_tag('td');
-            echo html_writer::checkbox('requiresync', null,
-                    $rocketchatrole->requiresync, '', ['data-roleid' => $role->id]);
+            echo html_writer::checkbox(
+                'requiresync',
+                null,
+                $rocketchatrole->requiresync,
+                '',
+                ['data-roleid' => $role->id]
+            );
             echo html_writer::end_tag('td');
             echo html_writer::end_tag('tr');
         }

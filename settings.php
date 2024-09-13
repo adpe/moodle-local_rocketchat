@@ -29,46 +29,66 @@ defined('MOODLE_INTERNAL') || die;
 $ADMIN->add('root', new admin_category('local_rocketchat', get_string('pluginname', 'local_rocketchat')));
 
 // Add Rocket.Chat API and sync settings.
-$settingspage = new admin_settingpage('local_rocketchat_settings',  get_string('settings'), 'moodle/site:config');
+$settingspage = new admin_settingpage('local_rocketchat_settings', get_string('settings'), 'moodle/site:config');
 
 $settingspage->add(new admin_setting_heading('local_rocketchat_settings_api', get_string('heading_api', 'local_rocketchat'), ''));
-$settingspage->add(new admin_setting_configtext('local_rocketchat/host',
-        get_string('hostname' , 'local_rocketchat'),
-        get_string('hostname_desc' , 'local_rocketchat'),
-        'localhost'));
-$settingspage->add(new admin_setting_configtext('local_rocketchat/port',
-        get_string('port' , 'local_rocketchat'),
-        get_string('port_desc' , 'local_rocketchat'),
-        '3000'));
-$settingspage->add(new admin_setting_configselect('local_rocketchat/protocol',
-        get_string('protocol', 'local_rocketchat'),
-        get_string('protocol_desc', 'local_rocketchat'),
-        '0', [0 => 'https', 1 => 'http']));
-$settingspage->add(new admin_setting_configtext('local_rocketchat/username',
-        get_string('username' , 'local_rocketchat'),
-        get_string('username_desc' , 'local_rocketchat'),
-        ''));
-$settingspage->add(new admin_setting_configpasswordunmask('local_rocketchat/password',
-        get_string('password' , 'local_rocketchat'),
-        get_string('password_desc' , 'local_rocketchat'),
-        ''));
-$settingspage->add(new admin_setting_configcheckbox('local_rocketchat/allowexternalconnection',
-        get_string('allowexternalconnection', 'local_rocketchat'),
-        get_string('allowexternalconnection_desc', 'local_rocketchat'), 1));
+$settingspage->add(new admin_setting_configtext(
+    'local_rocketchat/host',
+    get_string('hostname', 'local_rocketchat'),
+    get_string('hostname_desc', 'local_rocketchat'),
+    'localhost'
+));
+$settingspage->add(new admin_setting_configtext(
+    'local_rocketchat/port',
+    get_string('port', 'local_rocketchat'),
+    get_string('port_desc', 'local_rocketchat'),
+    '3000'
+));
+$settingspage->add(new admin_setting_configselect(
+    'local_rocketchat/protocol',
+    get_string('protocol', 'local_rocketchat'),
+    get_string('protocol_desc', 'local_rocketchat'),
+    '0',
+    [0 => 'https', 1 => 'http']
+));
+$settingspage->add(new admin_setting_configtext(
+    'local_rocketchat/username',
+    get_string('username', 'local_rocketchat'),
+    get_string('username_desc', 'local_rocketchat'),
+    ''
+));
+$settingspage->add(new admin_setting_configpasswordunmask(
+    'local_rocketchat/password',
+    get_string('password', 'local_rocketchat'),
+    get_string('password_desc', 'local_rocketchat'),
+    ''
+));
+$settingspage->add(new admin_setting_configcheckbox(
+    'local_rocketchat/allowexternalconnection',
+    get_string('allowexternalconnection', 'local_rocketchat'),
+    get_string('allowexternalconnection_desc', 'local_rocketchat'),
+    1
+));
 
 $settingspage->add(new admin_setting_heading('local_rocketchat_settings_sync', get_string('heading_sync', 'local_rocketchat'), ''));
-$settingspage->add(new admin_setting_configtextarea('local_rocketchat/groupregex',
-        get_string('groupregex' , 'local_rocketchat'),
-        get_string('groupregex_desc' , 'local_rocketchat'),
-        '/all/'));
+$settingspage->add(new admin_setting_configtextarea(
+    'local_rocketchat/groupregex',
+    get_string('groupregex', 'local_rocketchat'),
+    get_string('groupregex_desc', 'local_rocketchat'),
+    '/all/'
+));
 
 $ADMIN->add('local_rocketchat', $settingspage);
 
-$ADMIN->add('local_rocketchat', new admin_externalpage('local_rocketchat_course_integration',
-        get_string('heading_course' , 'local_rocketchat'),
-        '/local/rocketchat/settings/course_integration.php',
-        'local/rocketchat:view'));
-$ADMIN->add('local_rocketchat', new admin_externalpage('local_rocketchat_role_integration',
-        get_string('heading_role' , 'local_rocketchat'),
-        '/local/rocketchat/settings/role_integration.php',
-        'local/rocketchat:view'));
+$ADMIN->add('local_rocketchat', new admin_externalpage(
+    'local_rocketchat_course_integration',
+    get_string('heading_course', 'local_rocketchat'),
+    '/local/rocketchat/settings/course_integration.php',
+    'local/rocketchat:view'
+));
+$ADMIN->add('local_rocketchat', new admin_externalpage(
+    'local_rocketchat_role_integration',
+    get_string('heading_role', 'local_rocketchat'),
+    '/local/rocketchat/settings/role_integration.php',
+    'local/rocketchat:view'
+));

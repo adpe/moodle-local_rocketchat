@@ -25,24 +25,25 @@
 
 namespace local_rocketchat\events\observers;
 
+use dml_exception;
 use local_rocketchat\client;
+use local_rocketchat\integration\sync;
 use local_rocketchat\integration\users;
-use local_rocketchat\sync;
 use local_rocketchat\utilities;
+use ReflectionException;
 
 /**
  * Handles when user enrolment is updated.
  */
 class user_enrolment_updated {
-
     /**
      * Main method call.
      *
-     * @param $event
-     * @throws \ReflectionException
-     * @throws \dml_exception
+     * @param \core\event\user_enrolment_updated $event
+     * @throws ReflectionException
+     * @throws dml_exception
      */
-    public static function call($event) {
+    public static function call(\core\event\user_enrolment_updated $event): void {
         $data = utilities::access_protected($event, 'data');
 
         if (sync::is_event_based_sync_on_course($data['courseid'])) {
@@ -53,10 +54,10 @@ class user_enrolment_updated {
     /**
      * Update user.
      *
-     * @param $userenrolmentid
-     * @throws \dml_exception
+     * @param string $userenrolmentid
+     * @throws dml_exception
      */
-    private static function sync_enrolment_status($userenrolmentid) {
+    private static function sync_enrolment_status(string $userenrolmentid): void {
         $client = new client();
         if (!$client->authenticated) {
             return;

@@ -43,10 +43,14 @@ class provider implements \core_privacy\local\metadata\provider, user_preference
      * @return collection The array of metadata.
      */
     public static function get_metadata(collection $collection): collection {
-        $collection->add_user_preference('local_rocketchat_external_user',
-                'privacy:metadata:preference:local_rocketchat_external_user');
-        $collection->add_user_preference('local_rocketchat_external_token',
-                'privacy:metadata:preference:local_rocketchat_external_token');
+        $collection->add_user_preference(
+            'local_rocketchat_external_user',
+            'privacy:metadata:preference:local_rocketchat_external_user'
+        );
+        $collection->add_user_preference(
+            'local_rocketchat_external_token',
+            'privacy:metadata:preference:local_rocketchat_external_token'
+        );
 
         $collection->link_external_location('local_rocketchat', [
                 'apiusername' => 'privacy:metadata:local_rocketchat_api:username',
@@ -67,17 +71,21 @@ class provider implements \core_privacy\local\metadata\provider, user_preference
     public static function export_user_preferences(int $userid) {
         $preference = get_user_preferences('local_rocketchat_external_user', null, $userid);
         if (isset($preference)) {
-            writer::export_user_preference('local_rocketchat', 'local_rocketchat_external_user',
-                    $preference,
-                    get_string('privacy:metadata:preference:local_rocketchat_external_user', 'local_rocketchat')
+            writer::export_user_preference(
+                'local_rocketchat',
+                'local_rocketchat_external_user',
+                $preference,
+                get_string('privacy:metadata:preference:local_rocketchat_external_user', 'local_rocketchat')
             );
         }
 
         $preference = get_user_preferences('local_rocketchat_external_token', null, $userid);
         if (isset($preference)) {
-            writer::export_user_preference('local_rocketchat', 'local_rocketchat_external_token',
-                    $preference,
-                    get_string('privacy:metadata:preference:local_rocketchat_external_token', 'local_rocketchat')
+            writer::export_user_preference(
+                'local_rocketchat',
+                'local_rocketchat_external_token',
+                $preference,
+                get_string('privacy:metadata:preference:local_rocketchat_external_token', 'local_rocketchat')
             );
         }
     }

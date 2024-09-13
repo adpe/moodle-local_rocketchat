@@ -22,6 +22,11 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\output\notification;
+use local_rocketchat\client;
+use local_rocketchat\form\account;
+use local_rocketchat\utilities;
+
 require_once(__DIR__ . '/../../config.php');
 
 require_login();
@@ -31,7 +36,7 @@ require_capability('local/rocketchat:linkaccount', $context);
 
 $disconnect = optional_param('disconnect', false, PARAM_BOOL);
 
-if (!\local_rocketchat\utilities::is_external_connection_allowed()) {
+if (!utilities::is_external_connection_allowed()) {
     redirect($CFG->wwwroot);
 }
 
@@ -50,35 +55,31 @@ if ($disconnect && $linked) {
 
     unset_user_preference('local_rocketchat_external_user');
     unset_user_preference('local_rocketchat_external_token');
-    redirect($url, get_string('linkaccount_disconnected', 'local_rocketchat'), null,
-            \core\output\notification::NOTIFY_SUCCESS);
+    redirect($url, get_string('linkaccount_disconnected', 'local_rocketchat'), null, notification::NOTIFY_SUCCESS);
 }
 
 if ($linked) {
-    $form = new \local_rocketchat\form\account($url,
-            ['email' => get_user_preferences('local_rocketchat_external_user'), 'linked' => true]);
+    $form = new account($url, ['email' => get_user_preferences('local_rocketchat_external_user'), 'linked' => true]);
 } else {
-    $form = new \local_rocketchat\form\account($url, ['linked' => false]);
+    $form = new account($url, ['linked' => false]);
     if ($form->is_cancelled()) {
         redirect(new moodle_url('/user/preferences.php'));
     }
 
     if ($form->is_submitted()) {
         if ($data = $form->get_data()) {
-            $rocketchat = new \local_rocketchat\client();
+            $rocketchat = new client();
             $response = $rocketchat->authenticate($data->email, $data->password);
 
             if (is_null($response)) {
-                redirect($url, get_string('connection_failure', 'local_rocketchat'), null,
-                        \core\output\notification::NOTIFY_ERROR);
+                redirect($url, get_string('connection_failure', 'local_rocketchat'), null, notification::NOTIFY_ERROR);
             }
 
             if (isset($response->status) && $response->status == 'success') {
                 set_user_preference('local_rocketchat_external_user', $data->email);
                 set_user_preference('local_rocketchat_external_token', $response->data->authToken);
 
-                redirect($url, get_string('linkaccount_connected', 'local_rocketchat'), null,
-                        \core\output\notification::NOTIFY_SUCCESS);
+                redirect($url, get_string('linkaccount_connected', 'local_rocketchat'), null, notification::NOTIFY_SUCCESS);
             }
         }
     }

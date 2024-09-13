@@ -25,23 +25,30 @@
 
 namespace local_rocketchat\events\observers;
 
+use coding_exception;
+use dml_exception;
+use local_rocketchat\client;
+use local_rocketchat\integration\sync;
+use local_rocketchat\integration\users;
+use local_rocketchat\utilities;
+use ReflectionException;
+
 /**
  * Handles when user enrolment is created.
  */
 class user_enrolment_created {
-
     /**
      * Main method call.
      *
-     * @param $event
-     * @throws \ReflectionException
-     * @throws \coding_exception
-     * @throws \dml_exception
+     * @param \core\event\user_enrolment_created $event
+     * @throws ReflectionException
+     * @throws coding_exception
+     * @throws dml_exception
      */
-    public static function call($event) {
-        $data = \local_rocketchat\utilities::access_protected($event, 'data');
+    public static function call(\core\event\user_enrolment_created $event): void {
+        $data = utilities::access_protected($event, 'data');
 
-        if (\local_rocketchat\sync::is_event_based_sync_on_course($data['courseid'])) {
+        if (sync::is_event_based_sync_on_course($data['courseid'])) {
             self::sync_user($data['relateduserid']);
         }
     }
@@ -49,21 +56,21 @@ class user_enrolment_created {
     /**
      * Create user.
      *
-     * @param $userid
-     * @throws \coding_exception
-     * @throws \dml_exception
+     * @param string $userid
+     * @throws coding_exception
+     * @throws dml_exception
      */
-    private static function sync_user($userid) {
+    private static function sync_user(string $userid): void {
         global $DB;
 
-        $client = new \local_rocketchat\client();
+        $client = new client();
         if (!$client->authenticated) {
             return;
         }
 
         $user = $DB->get_record('user', ['id' => $userid]);
 
-        $userapi = new \local_rocketchat\integration\users($client);
+        $userapi = new users($client);
         if ($userapi->user_exists($user)) {
             return;
         }

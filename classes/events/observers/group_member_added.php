@@ -25,25 +25,27 @@
 
 namespace local_rocketchat\events\observers;
 
+use coding_exception;
+use dml_exception;
 use local_rocketchat\client;
 use local_rocketchat\integration\subscriptions;
-use local_rocketchat\sync;
+use local_rocketchat\integration\sync;
 use local_rocketchat\utilities;
+use ReflectionException;
 
 /**
  * Handles when group member is added.
  */
 class group_member_added {
-
     /**
      * Main method call.
      *
-     * @param $event
-     * @throws \ReflectionException
-     * @throws \dml_exception
-     * @throws \coding_exception
+     * @param \core\event\group_member_added $event
+     * @throws ReflectionException
+     * @throws coding_exception
+     * @throws dml_exception
      */
-    public static function call($event) {
+    public static function call(\core\event\group_member_added $event): void {
         $data = utilities::access_protected($event, 'data');
 
         if (sync::is_event_based_sync_on_course($data['courseid'])) {
@@ -54,18 +56,18 @@ class group_member_added {
     /**
      * Add user to channel.
      *
-     * @param $data
-     * @throws \coding_exception
-     * @throws \dml_exception
+     * @param array $data
+     * @throws coding_exception
+     * @throws dml_exception
      */
-    private static function add_subscription($data) {
+    private static function add_subscription(array $data): void {
         $client = new client();
 
         if (!$client->authenticated) {
             return;
         }
 
-        list ($user, $group) = utilities::get_user_and_group_by_event_data($data);
+         [$user, $group] = utilities::get_user_and_group_by_event_data($data);
 
         $subscriptionapi = new subscriptions($client);
         $subscriptionapi->add_subscription_for_user($user, $group);

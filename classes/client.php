@@ -25,6 +25,8 @@
 
 namespace local_rocketchat;
 
+use dml_exception;
+
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/filelib.php');
@@ -33,60 +35,52 @@ require_once($CFG->libdir . '/filelib.php');
  * Class which handles authentication.
  */
 class client {
-
     /**
      * Is the user already authenticated.
      *
      * @var bool
      */
-    public $authenticated = false;
+    public bool $authenticated = false;
 
     /**
      * The endpoint URL to authenticate.
      *
      * @var string
      */
-    public $url;
+    public string $url;
 
     /**
      * Holds the auth token which can be used for future authentications (skip manual login).
      *
      * @var string
      */
-    private $authtoken;
+    private string $authtoken;
 
     /**
      * The unique user id.
      *
      * @var string
      */
-    private $userid;
+    private string $userid;
 
     /**
      * The unique username.
      *
-     * @var false|mixed|object|string
+     * @var mixed|false|object|string
      */
-    private $username;
+    private mixed $username;
 
     /**
      * The inputted clear text password.
      *
-     * @var false|mixed|object|string
+     * @var mixed|false|object|string
      */
-    private $password;
-
-    /**
-     * The API endpoint base path.
-     *
-     * @var string
-     */
-    private $api;
+    private mixed $password;
 
     /**
      * Client constructor to get settings for API calls.
      *
-     * @throws \dml_exception
+     * @throws dml_exception
      */
     public function __construct() {
         $host = get_config('local_rocketchat', 'host');
@@ -96,7 +90,6 @@ class client {
         $this->url = $protocol . '://' . $host . $port;
         $this->username = get_config('local_rocketchat', 'username');
         $this->password = get_config('local_rocketchat', 'password');
-        $this->api = '';
 
         $this->authenticate($this->username, $this->password);
     }
@@ -106,7 +99,7 @@ class client {
      *
      * @return string
      */
-    public function get_instance_url() {
+    public function get_instance_url(): string {
         return $this->url;
     }
 
@@ -131,9 +124,11 @@ class client {
     /**
      * Call authentication and store the credentials from response.
      *
-     * @throws \dml_exception
+     * @param string $user
+     * @param string $password
+     * @return bool|mixed
      */
-    public function authenticate($user, $password) {
+    public function authenticate(string $user, string $password): mixed {
         $response = $this->request_login_credentials($user, $password);
 
         if (isset($response->status) && $response->status == 'success') {
@@ -147,12 +142,11 @@ class client {
     /**
      * Authenticate user on Rocket.Chat endpoint.
      *
-     * @param $user
-     * @param $password
+     * @param string $user
+     * @param string $password
      * @return bool|mixed
-     * @throws \dml_exception
      */
-    private function request_login_credentials($user, $password) {
+    private function request_login_credentials(string $user, string $password): mixed {
         $api = '/api/v1/login';
 
         $data = [
@@ -168,10 +162,9 @@ class client {
     /**
      * Map the credentials from data to object.
      *
-     * @param $data
-     * @return void
+     * @param mixed $data
      */
-    private function store_credentials($data) {
+    private function store_credentials(mixed $data): void {
         if (isset($data->authToken) && isset($data->userId)) {
             $this->authtoken = $data->authToken;
             $this->userid = $data->userId;

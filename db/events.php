@@ -50,4 +50,3 @@ $observers = [
         'callback'    => '\local_rocketchat\events\observers\user_enrolment_created::call',
     ],
 ];
-

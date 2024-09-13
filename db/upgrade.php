@@ -68,5 +68,3 @@ function xmldb_local_rocketchat_upgrade($oldversion) {
 
     return true;
 }
-
-

@@ -23,26 +23,32 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_rocketchat;
+namespace local_rocketchat\integration;
+
+use coding_exception;
+use dml_exception;
+use invalid_parameter_exception;
+use local_rocketchat\client;
+use moodle_exception;
+use stdClass;
 
 /**
  * Class which handles sync.
  */
 class sync {
-
     /**
      * The API client instance.
      *
      * @var client
      */
-    private $client;
+    private client $client;
 
     /**
      * Holds the errors.
      *
      * @var array
      */
-    private $errors = [];
+    private array $errors = [];
 
     /**
      * Constructor.
@@ -56,19 +62,19 @@ class sync {
      *
      * @return void
      */
-    private function reset_errors() {
+    private function reset_errors(): void {
         $this->errors = [];
     }
 
     /**
      * Sync all pending courses.
      *
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws \invalid_parameter_exception
-     * @throws \moodle_exception
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
      */
-    public function sync_pending_courses() {
+    public function sync_pending_courses(): void {
         global $DB;
 
         $rocketchatcourses = $DB->get_records('local_rocketchat_courses', ['pendingsync' => true]);
@@ -80,13 +86,13 @@ class sync {
     /**
      * Sync a single pending course.
      *
-     * @param $courseid
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws \invalid_parameter_exception
-     * @throws \moodle_exception
+     * @param int $courseid
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
      */
-    public function sync_pending_course($courseid) {
+    public function sync_pending_course(int $courseid): void {
         global $DB;
 
         if (!$rocketchatcourse = $DB->get_record('local_rocketchat_courses', ['course' => $courseid])) {
@@ -101,11 +107,11 @@ class sync {
     /**
      * Check if course is enabled for event based sync.
      *
-     * @param $courseid
+     * @param int $courseid
      * @return bool
-     * @throws \dml_exception
+     * @throws dml_exception
      */
-    public static function is_event_based_sync_on_course($courseid) {
+    public static function is_event_based_sync_on_course(int $courseid): bool {
         global $DB;
 
         $rocketchatcourse = $DB->get_record('local_rocketchat_courses', ['course' => $courseid]);
@@ -116,14 +122,14 @@ class sync {
     /**
      * Create helper entry for a course.
      *
-     * @param $courseid
-     * @return bool|int
-     * @throws \dml_exception
+     * @param int $courseid
+     * @return int
+     * @throws dml_exception
      */
-    private function create_rocketchat_course($courseid) {
+    private function create_rocketchat_course(int $courseid): int {
         global $DB;
 
-        $rocketchatcourse = new \stdClass();
+        $rocketchatcourse = new stdClass();
         $rocketchatcourse->course = $courseid;
         $rocketchatcourse->pendingsync = true;
         $rocketchatcourseid = $DB->insert_record('local_rocketchat_courses', $rocketchatcourse);
@@ -134,14 +140,14 @@ class sync {
     /**
      * Run the sync for a course.
      *
-     * @param $rocketchatcourse
-     * @return false|void
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws \invalid_parameter_exception
-     * @throws \moodle_exception
+     * @param mixed $rocketchatcourse
+     * @return void
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
      */
-    private function run_sync($rocketchatcourse) {
+    private function run_sync(mixed $rocketchatcourse): void {
         global $DB;
 
         if (!$this->client->authenticated) {
@@ -149,22 +155,22 @@ class sync {
             $object->code = get_string('auth_failure', 'local_rocketchat');
             $object->error = get_string('connection_failure', 'local_rocketchat');
 
-            array_push($this->errors, $object);
+            $this->errors[] = $object;
 
-            return false;
+            return;
         }
 
         $course = $DB->get_record('course', ['id' => $rocketchatcourse->course]);
 
-        $channelapi = new integration\channels($this->client);
+        $channelapi = new channels($this->client);
         $channelapi->create_channels_for_course($rocketchatcourse);
         $this->errors = array_merge($this->errors, $channelapi->errors);
 
-        $userapi = new integration\users($this->client);
+        $userapi = new users($this->client);
         $userapi->create_users_for_course($rocketchatcourse);
         $this->errors = array_merge($this->errors, $userapi->errors);
 
-        $subscriptionapi = new integration\subscriptions($this->client);
+        $subscriptionapi = new subscriptions($this->client);
         $subscriptionapi->add_subscriptions_for_course($course);
         $this->errors = array_merge($this->errors, $subscriptionapi->errors);
     }
@@ -172,10 +178,10 @@ class sync {
     /**
      * Map response about sync status to object.
      *
-     * @param $rocketchatcourse
-     * @throws \dml_exception
+     * @param mixed $rocketchatcourse
+     * @throws dml_exception
      */
-    private function record_result($rocketchatcourse) {
+    private function record_result(mixed $rocketchatcourse): void {
         if (count($this->errors) == 0) {
             $this->pass_sync($rocketchatcourse);
         } else {
@@ -188,10 +194,10 @@ class sync {
     /**
      * Update helper entry when sync succeeded.
      *
-     * @param $rocketchatcourse
-     * @throws \dml_exception
+     * @param mixed $rocketchatcourse
+     * @throws dml_exception
      */
-    private function pass_sync($rocketchatcourse) {
+    private function pass_sync(mixed $rocketchatcourse): void {
         global $DB;
 
         $rocketchatcourse->pendingsync = 0;
@@ -204,10 +210,10 @@ class sync {
     /**
      * Update helper entry when sync failed.
      *
-     * @param $rocketchatcourse
-     * @throws \dml_exception
+     * @param mixed $rocketchatcourse
+     * @throws dml_exception
      */
-    private function fail_sync($rocketchatcourse) {
+    private function fail_sync(mixed $rocketchatcourse): void {
         global $DB;
 
         $errorstring = '';
