@@ -37,7 +37,7 @@ use core_privacy\local\request\writer;
  */
 class provider implements \core_privacy\local\metadata\provider, user_preference_provider {
     /**
-     * Returns meta data about this system.
+     * Returns metadata about this system.
      *
      * @param collection $collection The collection to add metadata to.
      * @return collection The array of metadata.

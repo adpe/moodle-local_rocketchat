@@ -25,29 +25,29 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$capabilities = array(
-    'local/rocketchat:view' => array(
+$capabilities = [
+    'local/rocketchat:view' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        )
-    ),
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
 
-    'local/rocketchat:manage' => array(
+    'local/rocketchat:manage' => [
         'riskbitmask' => RISK_CONFIG,
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        )
-    ),
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
 
-    'local/rocketchat:linkaccount' => array(
+    'local/rocketchat:linkaccount' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'user' => CAP_ALLOW
-        ),
-    ),
-);
+        'archetypes' => [
+            'user' => CAP_ALLOW,
+        ],
+    ],
+];

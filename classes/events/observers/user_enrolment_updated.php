@@ -30,9 +30,14 @@ use local_rocketchat\integration\users;
 use local_rocketchat\sync;
 use local_rocketchat\utilities;
 
+/**
+ * Handles when user enrolment is updated.
+ */
 class user_enrolment_updated {
 
     /**
+     * Main method call.
+     *
      * @param $event
      * @throws \ReflectionException
      * @throws \dml_exception
@@ -46,6 +51,8 @@ class user_enrolment_updated {
     }
 
     /**
+     * Update user.
+     *
      * @param $userenrolmentid
      * @throws \dml_exception
      */

@@ -35,7 +35,7 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('heading_course', 'local_rocketchat'));
 echo html_writer::tag('p', get_string('course_desc', 'local_rocketchat'));
 
-echo html_writer::start_tag('table', array('class' => 'admintable generaltable', 'id' => 'integrated-courses'));
+echo html_writer::start_tag('table', ['class' => 'admintable generaltable', 'id' => 'integrated-courses']);
 echo html_writer::start_tag('thead');
 echo html_writer::tag('th', get_string('coursetable_column_1', 'local_rocketchat'));
 echo html_writer::tag('th', get_string('coursetable_column_2', 'local_rocketchat'));
@@ -57,18 +57,18 @@ foreach ($courses as $course) {
         if ($course->id == $rocketchatcourse->courseid) {
             echo html_writer::start_tag('tr');
             echo html_writer::start_tag('td');
-            $courseurl = new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $course->id));
-            echo html_writer::tag('a', $course->fullname, array('href' => $courseurl));
+            $courseurl = new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $course->id]);
+            echo html_writer::tag('a', $course->fullname, ['href' => $courseurl]);
             echo html_writer::end_tag('td');
 
             echo html_writer::start_tag('td');
             echo html_writer::checkbox('eventbasedsync', null,
-                    $rocketchatcourse->eventbasedsync, '', array('data-courseid' => $course->id));
+                    $rocketchatcourse->eventbasedsync, '', ['data-courseid' => $course->id]);
             echo html_writer::end_tag('td');
 
             echo html_writer::start_tag('td');
             echo html_writer::checkbox('pendingsync', null,
-                    $rocketchatcourse->pendingsync, '', array('data-courseid' => $course->id));
+                    $rocketchatcourse->pendingsync, '', ['data-courseid' => $course->id]);
             echo html_writer::end_tag('td');
 
             echo html_writer::start_tag('td');
@@ -76,11 +76,11 @@ foreach ($courses as $course) {
             if ($rocketchatcourse->lastsync) {
                 $alert = ($rocketchatcourse->error) ? 'alert-danger' : 'alert-success';
 
-                echo html_writer::start_tag('div', array('style' => 'margin-bottom: 0', 'class' => 'alert ' . $alert));
+                echo html_writer::start_tag('div', ['style' => 'margin-bottom: 0', 'class' => 'alert ' . $alert]);
                 echo userdate($rocketchatcourse->lastsync, '%Y/%m/%d, %H:%M');
 
                 if ($rocketchatcourse->error) {
-                    echo html_writer::tag('span', ' ...', array('title' => $rocketchatcourse->error));
+                    echo html_writer::tag('span', ' ...', ['title' => $rocketchatcourse->error]);
                 }
 
                 echo html_writer::end_tag('div');
@@ -90,11 +90,11 @@ foreach ($courses as $course) {
 
             echo html_writer::start_tag('td');
             echo html_writer::tag("button", get_string('button_sync', 'local_rocketchat'),
-                array("type" => "button",
+                ["type" => "button",
                     "class" => "btn btn-default btn-xs",
                     "id" => "manual-sync",
                     "data-courseid" => $course->id,
-                    "style" => "margin-bottom: 0")
+                    "style" => "margin-bottom: 0"]
                 );
             echo html_writer::end_tag('td');
             echo html_writer::end_tag('tr');
@@ -105,8 +105,8 @@ echo html_writer::end_tag('tbody');
 echo html_writer::end_tag('table');
 
 // Show some additional information and hints.
-echo html_writer::start_tag('div', array("class" => 'alert alert-info'));
-echo html_writer::start_tag('ul', array("style" => "margin-top: 1rem"));
+echo html_writer::start_tag('div', ["class" => 'alert alert-info']);
+echo html_writer::start_tag('ul', ["style" => "margin-top: 1rem"]);
 echo html_writer::tag('li', get_string('courseinfo_1', 'local_rocketchat'));
 echo html_writer::tag('li', get_string('courseinfo_2', 'local_rocketchat'));
 echo html_writer::tag('li', get_string('courseinfo_3', 'local_rocketchat'));

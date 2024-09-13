@@ -25,25 +25,44 @@
 
 namespace local_rocketchat;
 
+/**
+ * Class which handles sync.
+ */
 class sync {
 
+    /**
+     * The API client instance.
+     *
+     * @var client
+     */
     private $client;
+
+    /**
+     * Holds the errors.
+     *
+     * @var array
+     */
     private $errors = [];
 
     /**
-     * sync constructor.
-     *
-     * @throws \dml_exception
+     * Constructor.
      */
     public function __construct() {
         $this->client = new client();
     }
 
+    /**
+     * Wipe out the errors.
+     *
+     * @return void
+     */
     private function reset_errors() {
         $this->errors = [];
     }
 
     /**
+     * Sync all pending courses.
+     *
      * @throws \coding_exception
      * @throws \dml_exception
      * @throws \invalid_parameter_exception
@@ -59,6 +78,8 @@ class sync {
     }
 
     /**
+     * Sync a single pending course.
+     *
      * @param $courseid
      * @throws \coding_exception
      * @throws \dml_exception
@@ -78,6 +99,8 @@ class sync {
     }
 
     /**
+     * Check if course is enabled for event based sync.
+     *
      * @param $courseid
      * @return bool
      * @throws \dml_exception
@@ -91,6 +114,8 @@ class sync {
     }
 
     /**
+     * Create helper entry for a course.
+     *
      * @param $courseid
      * @return bool|int
      * @throws \dml_exception
@@ -107,7 +132,10 @@ class sync {
     }
 
     /**
+     * Run the sync for a course.
+     *
      * @param $rocketchatcourse
+     * @return false|void
      * @throws \coding_exception
      * @throws \dml_exception
      * @throws \invalid_parameter_exception
@@ -142,6 +170,8 @@ class sync {
     }
 
     /**
+     * Map response about sync status to object.
+     *
      * @param $rocketchatcourse
      * @throws \dml_exception
      */
@@ -156,6 +186,8 @@ class sync {
     }
 
     /**
+     * Update helper entry when sync succeeded.
+     *
      * @param $rocketchatcourse
      * @throws \dml_exception
      */
@@ -170,6 +202,8 @@ class sync {
     }
 
     /**
+     * Update helper entry when sync failed.
+     *
      * @param $rocketchatcourse
      * @throws \dml_exception
      */

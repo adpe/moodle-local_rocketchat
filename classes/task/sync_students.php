@@ -35,8 +35,19 @@ namespace local_rocketchat\task;
  */
 class sync_students extends \core\task\scheduled_task {
 
+    /**
+     * Holds the current timestamp.
+     *
+     * @var int
+     */
     private $currenttime = 0;
 
+    /**
+     * Get i18n name of scheduled task.
+     *
+     * @return \lang_string|string
+     * @throws \coding_exception
+     */
     public function get_name() {
         return get_string('scheduledtaskname', 'local_rocketchat');
     }

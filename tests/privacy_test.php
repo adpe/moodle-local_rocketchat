@@ -34,12 +34,17 @@ use local_rocketchat\privacy\provider;
  * @copyright  2021 Adrian Perez <me@adrianperez.me> {@link https://adrianperez.me}
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class privacy_test extends \core_privacy\tests\provider_testcase {
+final class privacy_test extends \core_privacy\tests\provider_testcase {
 
     /**
      * Ensure that export_user_preferences returns no data if the user has not linked the Rocket.Chat user account.
+     *
+     * @covers \core_privacy\local\metadata\types\user_preference
+     *
+     * @throws \coding_exception
+     * @throws \dml_exception
      */
-    public function test_export_user_preferences_no_pref() {
+    public function test_export_user_preferences_no_pref(): void {
         $this->resetAfterTest();
 
         $user = $this->getDataGenerator()->create_user();
@@ -51,15 +56,17 @@ class privacy_test extends \core_privacy\tests\provider_testcase {
     /**
      * Test the export_user_preferences given different inputs.
      *
+     * @covers       \core_privacy\local\metadata\types\user_preference
+     *
      * @param string $type The name of the user preference to get/set
      * @param string $value The value you are storing
      * @param string $expected The expected value override
      *
-     * @throws coding_exception
-     * @throws dml_exception
+     * @throws \coding_exception
+     * @throws \dml_exception
      * @dataProvider user_preference_provider
      */
-    public function test_export_user_preferences($type, $value, $expected) {
+    public function test_export_user_preferences($type, $value, $expected): void {
         $this->resetAfterTest();
         $user = $this->getDataGenerator()->create_user();
 
@@ -81,12 +88,12 @@ class privacy_test extends \core_privacy\tests\provider_testcase {
      *
      * @return array Array of valid user preferences.
      */
-    public function user_preference_provider(): array {
-        return array(
-                array('local_rocketchat_external_user', 'teacher@moodle.a', ''),
-                array('local_rocketchat_external_user', 'student@moodle.a', ''),
-                array('local_rocketchat_external_token', 'ySbuPDYnA883Kqi7lrz85sbkFAQA3h4iXrGg6qlnXLW', ''),
-                array('local_rocketchat_external_token', 'cRrXOdD9F5FlHDVJBFyG6fA6XdICPOOdU637U4MJbrP', ''),
-        );
+    public static function user_preference_provider(): array {
+        return [
+                ['local_rocketchat_external_user', 'teacher@moodle.a', ''],
+                ['local_rocketchat_external_user', 'student@moodle.a', ''],
+                ['local_rocketchat_external_token', 'ySbuPDYnA883Kqi7lrz85sbkFAQA3h4iXrGg6qlnXLW', ''],
+                ['local_rocketchat_external_token', 'cRrXOdD9F5FlHDVJBFyG6fA6XdICPOOdU637U4MJbrP', ''],
+        ];
     }
 }

@@ -54,10 +54,10 @@ class account extends moodleform {
         $mform->addElement('static', 'url', get_string('url'), $rocketchat->get_instance_url());
 
         $status = html_writer::tag('span', get_string('notconnected', 'badges'),
-                array('class' => 'notconnected', 'id' => 'connection-status'));
+                ['class' => 'notconnected', 'id' => 'connection-status']);
         if ($linked) {
             $status = html_writer::tag('span', get_string('connected', 'badges'),
-                    array('class' => 'connected', 'id' => 'connection-status'));
+                    ['class' => 'connected', 'id' => 'connection-status']);
         }
 
         $mform->addElement('static', 'status', get_string('status'), $status);

@@ -25,6 +25,7 @@
 
 namespace local_rocketchat\integration;
 
+use local_rocketchat\client;
 use local_rocketchat\utilities;
 
 defined('MOODLE_INTERNAL') || die;
@@ -32,16 +33,41 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->libdir . '/grouplib.php');
 
+/**
+ * Class with subscriptions helper methods.
+ */
 class subscriptions {
 
-    public $errors = array();
-
+    /**
+     * The API client.
+     *
+     * @var client
+     */
     private $client;
+
+    /**
+     * Holds the errors.
+     *
+     * @var array
+     */
+    public $errors = [];
+
+    /**
+     * The channels API client.
+     *
+     * @var channels
+     */
     private $channelapi;
+
+    /**
+     * The users API clinet.
+     *
+     * @var users
+     */
     private $userapi;
 
     /**
-     * subscriptions constructor.
+     * Constructor.
      *
      * @param $client
      */
@@ -52,6 +78,8 @@ class subscriptions {
     }
 
     /**
+     * Add subscription for a single course.
+     *
      * @param $course
      * @throws \dml_exception
      * @throws \coding_exception
@@ -59,7 +87,7 @@ class subscriptions {
     public function add_subscriptions_for_course($course) {
         global $DB;
 
-        $groups = $DB->get_records('groups', array("courseid" => $course->id));
+        $groups = $DB->get_records('groups', ["courseid" => $course->id]);
 
         foreach ($groups as $group) {
             $this->add_subscriptions_for_group($group);
@@ -67,6 +95,8 @@ class subscriptions {
     }
 
     /**
+     * Add subscription for a single group.
+     *
      * @param $group
      * @throws \coding_exception
      * @throws \dml_exception
@@ -81,6 +111,8 @@ class subscriptions {
     }
 
     /**
+     * Add subscription for a single user
+     *
      * @param $user
      * @param $group
      * @throws \coding_exception
@@ -97,7 +129,7 @@ class subscriptions {
 
             $data = [
                     'roomId' => $rocketchatchannel,
-                    'userId' => $rocketchatuser
+                    'userId' => $rocketchatuser,
             ];
 
             $header = $this->client->authentication_headers();
@@ -116,6 +148,8 @@ class subscriptions {
     }
 
     /**
+     * Remove subscription for a single user.
+     *
      * @param $user
      * @param $group
      * @throws \coding_exception
@@ -130,10 +164,10 @@ class subscriptions {
         if ($rocketchatuser && $subscription && $rocketchatchannel) {
             $api = '/api/v1/groups.kick';
 
-            $data = array(
+            $data = [
                     "roomId" => $rocketchatchannel,
-                    "userId" => $rocketchatuser
-            );
+                    "userId" => $rocketchatuser,
+            ];
 
             $header = $this->client->authentication_headers();
             $header[] = $this->client->contenttype_headers();
@@ -151,6 +185,8 @@ class subscriptions {
     }
 
     /**
+     * Check if user has a subscription in a channel.
+     *
      * @param $rocketchatchannel
      * @param $rocketchatuser
      * @return bool

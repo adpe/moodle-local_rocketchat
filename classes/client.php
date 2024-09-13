@@ -29,15 +29,58 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/filelib.php');
 
+/**
+ * Class which handles authentication.
+ */
 class client {
 
+    /**
+     * Is the user already authenticated.
+     *
+     * @var bool
+     */
     public $authenticated = false;
+
+    /**
+     * The endpoint URL to authenticate.
+     *
+     * @var string
+     */
     public $url;
 
+    /**
+     * Holds the auth token which can be used for future authentications (skip manual login).
+     *
+     * @var string
+     */
     private $authtoken;
+
+    /**
+     * The unique user id.
+     *
+     * @var string
+     */
     private $userid;
+
+    /**
+     * The unique username.
+     *
+     * @var false|mixed|object|string
+     */
     private $username;
+
+    /**
+     * The inputted clear text password.
+     *
+     * @var false|mixed|object|string
+     */
     private $password;
+
+    /**
+     * The API endpoint base path.
+     *
+     * @var string
+     */
     private $api;
 
     /**
@@ -58,19 +101,36 @@ class client {
         $this->authenticate($this->username, $this->password);
     }
 
+    /**
+     * The unique url for the block instance.
+     *
+     * @return string
+     */
     public function get_instance_url() {
         return $this->url;
     }
 
+    /**
+     * The content type header.
+     *
+     * @return string
+     */
     public function contenttype_headers(): string {
         return 'Content-Type: application/json';
     }
 
+    /**
+     * The authentication header.
+     *
+     * @return string[]
+     */
     public function authentication_headers(): array {
         return ['X-Auth-Token: ' . $this->authtoken, 'X-User-Id: ' . $this->userid];
     }
 
     /**
+     * Call authentication and store the credentials from response.
+     *
      * @throws \dml_exception
      */
     public function authenticate($user, $password) {
@@ -90,13 +150,14 @@ class client {
      * @param $user
      * @param $password
      * @return bool|mixed
+     * @throws \dml_exception
      */
     private function request_login_credentials($user, $password) {
         $api = '/api/v1/login';
 
         $data = [
                 'user' => $user,
-                'password' => $password
+                'password' => $password,
         ];
 
         $header[] = $this->contenttype_headers();
@@ -104,6 +165,12 @@ class client {
         return utilities::make_request($this->url, $api, 'post', $data, $header);
     }
 
+    /**
+     * Map the credentials from data to object.
+     *
+     * @param $data
+     * @return void
+     */
     private function store_credentials($data) {
         if (isset($data->authToken) && isset($data->userId)) {
             $this->authtoken = $data->authToken;

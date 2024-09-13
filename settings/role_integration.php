@@ -35,7 +35,7 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('heading_role', 'local_rocketchat'));
 echo html_writer::tag('p', get_string('role_desc', 'local_rocketchat'));
 
-echo html_writer::start_tag('table', array('class' => 'admintable generaltable', 'id' => 'integrated-roles'));
+echo html_writer::start_tag('table', ['class' => 'admintable generaltable', 'id' => 'integrated-roles']);
 echo html_writer::start_tag('thead');
 echo html_writer::tag('th',  get_string('roletable_column_1', 'local_rocketchat'));
 echo html_writer::tag('th',  get_string('roletable_column_2', 'local_rocketchat'));
@@ -55,7 +55,7 @@ foreach ($roles as $role) {
 
             echo html_writer::start_tag('td');
             echo html_writer::checkbox('requiresync', null,
-                    $rocketchatrole->requiresync, '', array('data-roleid' => $role->id));
+                    $rocketchatrole->requiresync, '', ['data-roleid' => $role->id]);
             echo html_writer::end_tag('td');
             echo html_writer::end_tag('tr');
         }
@@ -65,8 +65,8 @@ echo html_writer::end_tag('tbody');
 echo html_writer::end_tag('table');
 
 // Show some additional information and hints.
-echo html_writer::start_tag('div', array("class" => 'alert alert-info'));
-echo html_writer::start_tag('ul', array("style" => "margin-top: 1rem"));
+echo html_writer::start_tag('div', ["class" => 'alert alert-info']);
+echo html_writer::start_tag('ul', ["style" => "margin-top: 1rem"]);
 echo html_writer::tag('li', get_string('roleinfo_1', 'local_rocketchat'));
 echo html_writer::end_tag('ul');
 echo html_writer::end_tag('div');

@@ -25,6 +25,7 @@
 
 namespace local_rocketchat\integration;
 
+use local_rocketchat\client;
 use local_rocketchat\utilities;
 
 defined('MOODLE_INTERNAL') || die;
@@ -32,16 +33,37 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->dirroot . '/group/externallib.php');
 
+/**
+ * Class with channels helper methods.
+ */
 class channels {
 
+    /**
+     * The API client.
+     *
+     * @var client
+     */
     private $client;
+
+    /**
+     * Holds the errors.
+     *
+     * @var array
+     */
     public $errors = [];
 
+    /**
+     * Constructor.
+     *
+     * @param $client
+     */
     public function __construct($client) {
         $this->client = $client;
     }
 
     /**
+     * Create channels for a single course.
+     *
      * @param $rocketchatcourse
      * @throws \dml_exception
      * @throws \coding_exception
@@ -64,6 +86,8 @@ class channels {
     }
 
     /**
+     * Check if channel exists for a group.
+     *
      * @param $group
      * @return bool
      * @throws \dml_exception
@@ -78,6 +102,8 @@ class channels {
     }
 
     /**
+     * Check if group has a private channel.
+     *
      * @param $name
      * @return bool
      * @throws \dml_exception
@@ -97,6 +123,8 @@ class channels {
     }
 
     /**
+     * Create a channel.
+     *
      * @param $channel
      * @throws \coding_exception
      * @throws \dml_exception
@@ -108,6 +136,8 @@ class channels {
     }
 
     /**
+     * Check if channel exists.
+     *
      * @param $channelname
      * @return bool
      * @throws \dml_exception
@@ -123,6 +153,8 @@ class channels {
     }
 
     /**
+     * Get existing channel.
+     *
      * @return mixed
      * @throws \dml_exception
      */
@@ -138,6 +170,8 @@ class channels {
     }
 
     /**
+     * Create channel.
+     *
      * @param $channel
      * @throws \coding_exception
      * @throws \dml_exception
@@ -146,7 +180,7 @@ class channels {
         $api = '/api/v1/channels.create';
 
         $data = [
-                'name' => $channel
+                'name' => $channel,
         ];
 
         $header = $this->client->authentication_headers();
@@ -168,7 +202,7 @@ class channels {
 
         $data = [
                 'roomId' => $response->channel->_id,
-                'type' => 'p'
+                'type' => 'p',
         ];
 
         $response = utilities::make_request($this->client->url, $api, 'post', $data, $header);
@@ -183,6 +217,8 @@ class channels {
     }
 
     /**
+     * Check if group needs a channel.
+     *
      * @param $group
      * @return bool
      * @throws \dml_exception
@@ -201,6 +237,8 @@ class channels {
     }
 
     /**
+     * Get formatted channel name by group name.
+     *
      * @param $courseshortname
      * @param $groupname
      * @return string

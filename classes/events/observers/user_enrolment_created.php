@@ -25,9 +25,14 @@
 
 namespace local_rocketchat\events\observers;
 
+/**
+ * Handles when user enrolment is created.
+ */
 class user_enrolment_created {
 
     /**
+     * Main method call.
+     *
      * @param $event
      * @throws \ReflectionException
      * @throws \coding_exception
@@ -42,6 +47,8 @@ class user_enrolment_created {
     }
 
     /**
+     * Create user.
+     *
      * @param $userid
      * @throws \coding_exception
      * @throws \dml_exception

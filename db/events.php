@@ -32,22 +32,22 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$observers = array(
-    array(
+$observers = [
+    [
         'eventname'   => '\core\event\user_enrolment_updated',
-        'callback'    => '\local_rocketchat\events\observers\user_enrolment_updated::call'
-    ),
-    array(
+        'callback'    => '\local_rocketchat\events\observers\user_enrolment_updated::call',
+    ],
+    [
         'eventname'   => '\core\event\group_member_added',
-        'callback'    => '\local_rocketchat\events\observers\group_member_added::call'
-    ),
-    array(
+        'callback'    => '\local_rocketchat\events\observers\group_member_added::call',
+    ],
+    [
         'eventname'   => '\core\event\group_member_removed',
-        'callback'    => '\local_rocketchat\events\observers\group_member_removed::call'
-    ),
-    array(
+        'callback'    => '\local_rocketchat\events\observers\group_member_removed::call',
+    ],
+    [
         'eventname'   => '\core\event\user_enrolment_created',
-        'callback'    => '\local_rocketchat\events\observers\user_enrolment_created::call'
-    )
-);
+        'callback'    => '\local_rocketchat\events\observers\user_enrolment_created::call',
+    ],
+];
 

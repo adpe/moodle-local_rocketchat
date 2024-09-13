@@ -34,37 +34,37 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$functions = array(
-        'local_rocketchat_set_rocketchat_event_based_sync' => array(
+$functions = [
+        'local_rocketchat_set_rocketchat_event_based_sync' => [
                 'classname' => 'local_rocketchat_external',
                 'methodname' => 'set_rocketchat_event_based_sync',
                 'classpath' => 'local/rocketchat/externallib.php',
                 'description' => 'Sets whether or not a course should integrate based on events with rocket chat.',
                 'type' => 'update',
                 'ajax' => true,
-        ),
-        'local_rocketchat_set_rocketchat_course_sync' => array(
+        ],
+        'local_rocketchat_set_rocketchat_course_sync' => [
                 'classname' => 'local_rocketchat_external',
                 'methodname' => 'set_rocketchat_course_sync',
                 'classpath' => 'local/rocketchat/externallib.php',
                 'description' => 'Sets whether or not a course should integrate with rocket chat.',
                 'type' => 'update',
                 'ajax' => true,
-        ),
-        'local_rocketchat_set_rocketchat_role_sync' => array(
+        ],
+        'local_rocketchat_set_rocketchat_role_sync' => [
                 'classname' => 'local_rocketchat_external',
                 'methodname' => 'set_rocketchat_role_sync',
                 'classpath' => 'local/rocketchat/externallib.php',
                 'description' => 'Sets whether or not a role should integrate with rocket chat.',
                 'type' => 'update',
                 'ajax' => true,
-        ),
-        'local_rocketchat_manually_trigger_sync' => array(
+        ],
+        'local_rocketchat_manually_trigger_sync' => [
                 'classname' => 'local_rocketchat_external',
                 'methodname' => 'manually_trigger_sync',
                 'classpath' => 'local/rocketchat/externallib.php',
                 'description' => 'Syncs course with rocket chat.',
                 'type' => 'update',
                 'ajax' => true,
-        )
-);
+        ],
+];

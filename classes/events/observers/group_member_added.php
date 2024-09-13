@@ -30,9 +30,14 @@ use local_rocketchat\integration\subscriptions;
 use local_rocketchat\sync;
 use local_rocketchat\utilities;
 
+/**
+ * Handles when group member is added.
+ */
 class group_member_added {
 
     /**
+     * Main method call.
+     *
      * @param $event
      * @throws \ReflectionException
      * @throws \dml_exception
@@ -47,6 +52,8 @@ class group_member_added {
     }
 
     /**
+     * Add user to channel.
+     *
      * @param $data
      * @throws \coding_exception
      * @throws \dml_exception

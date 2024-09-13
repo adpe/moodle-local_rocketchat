@@ -26,6 +26,7 @@
 namespace local_rocketchat\integration;
 
 use core_enrol_external;
+use local_rocketchat\client;
 use local_rocketchat\utilities;
 
 defined('MOODLE_INTERNAL') || die;
@@ -33,16 +34,37 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->dirroot . '/enrol/externallib.php');
 
+/**
+ * Class with user helper methods.
+ */
 class users {
 
+    /**
+     * The API client.
+     *
+     * @var client
+     */
     private $client;
+
+    /**
+     * Holds the errors.
+     *
+     * @var array
+     */
     public $errors = [];
 
+    /**
+     * Constructor.
+     *
+     * @param $client
+     */
     public function __construct($client) {
         $this->client = $client;
     }
 
     /**
+     * Create users for a single course.
+     *
      * @param $rocketchatcourse
      * @throws \invalid_parameter_exception
      * @throws \moodle_exception
@@ -61,6 +83,8 @@ class users {
     }
 
     /**
+     * Create user.
+     *
      * @param $user
      * @throws \coding_exception
      * @throws \dml_exception
@@ -74,7 +98,7 @@ class users {
                 'email' => $user->email,
                 'verified' => true,
                 'password' => substr(str_shuffle(md5(microtime())), 0, 6),
-                'joinDefaultChannels' => false
+                'joinDefaultChannels' => false,
         ];
 
         $header = $this->client->authentication_headers();
@@ -92,6 +116,8 @@ class users {
     }
 
     /**
+     * Check if user exists.
+     *
      * @param $user
      * @return bool
      * @throws \dml_exception
@@ -113,6 +139,8 @@ class users {
     }
 
     /**
+     * Get existing users.
+     *
      * @return mixed
      * @throws \dml_exception
      */
@@ -127,6 +155,8 @@ class users {
     }
 
     /**
+     * Get user.
+     *
      * @param $user
      * @return bool
      * @throws \dml_exception
@@ -152,6 +182,8 @@ class users {
     }
 
     /**
+     * Update user.
+     *
      * @param $userenrolmentid
      * @throws \dml_exception
      */
@@ -174,7 +206,7 @@ class users {
 
             $data = [
                     'userId' => $rocketchatuser->_id,
-                    'active' => $isactive
+                    'active' => $isactive,
             ];
 
             $header = $this->client->authentication_headers();
