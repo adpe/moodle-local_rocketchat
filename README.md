@@ -15,7 +15,7 @@ Moodle.
 
 ## Installation
 
-1. Copy this Rocket.Chat plugin to the `local` directory of your Moodle instance: `git clone https://github.com/adpe/moodle-local_rocketchat.git local/rocketchat`
+1. Copy this Rocket.Chat plugin to the `local` directory of your Moodle instance: `git clone https://github.com/adpe/moodle-local_rocketchat.git public/local/rocketchat`
 2. Visit the notifications' page to complete the installation process
 
 For more information, visit [documentation](http://docs.moodle.org/en/Installing_contributed_modules_or_plugins) for installing contributed modules and plugins.
