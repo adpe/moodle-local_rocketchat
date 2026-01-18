@@ -29,79 +29,31 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
+        php: ["8.2", "8.3", "8.4"]
+        moodle-branch: ["MOODLE_500_STABLE", "MOODLE_501_STABLE", "main"]
+        database: [pgsql, mariadb]
+        exclude:
           - php: 8.4
             moodle-branch: main
             database: pgsql
-            plugin-ci: 4
-          - php: 8.4
-            moodle-branch: main
-            database: mariadb
-            plugin-ci: 4
           - php: 8.3
             moodle-branch: main
             database: pgsql
-            plugin-ci: 4
-          - php: 8.3
-            moodle-branch: main
-            database: mariadb
-            plugin-ci: 4
           - php: 8.2
             moodle-branch: main
             database: pgsql
-            plugin-ci: 4
           - php: 8.2
             moodle-branch: main
             database: mariadb
-            plugin-ci: 4
           - php: 8.4
             moodle-branch: MOODLE_501_STABLE
             database: pgsql
-            plugin-ci: 4
-          - php: 8.4
-            moodle-branch: MOODLE_501_STABLE
-            database: mariadb
-            plugin-ci: 4
           - php: 8.3
             moodle-branch: MOODLE_501_STABLE
             database: pgsql
-            plugin-ci: 4
-          - php: 8.3
-            moodle-branch: MOODLE_501_STABLE
-            database: mariadb
-            plugin-ci: 4
           - php: 8.2
             moodle-branch: MOODLE_501_STABLE
             database: pgsql
-            plugin-ci: 4
-          - php: 8.2
-            moodle-branch: MOODLE_501_STABLE
-            database: mariadb
-            plugin-ci: 4
-          - php: 8.4
-            moodle-branch: MOODLE_500_STABLE
-            database: pgsql
-            plugin-ci: 4
-          - php: 8.4
-            moodle-branch: MOODLE_500_STABLE
-            database: mariadb
-            plugin-ci: 4
-          - php: 8.3
-            moodle-branch: MOODLE_500_STABLE
-            database: pgsql
-            plugin-ci: 4
-          - php: 8.3
-            moodle-branch: MOODLE_500_STABLE
-            database: mariadb
-            plugin-ci: 4
-          - php: 8.2
-            moodle-branch: MOODLE_500_STABLE
-            database: pgsql
-            plugin-ci: 4
-          - php: 8.2
-            moodle-branch: MOODLE_500_STABLE
-            database: mariadb
-            plugin-ci: 4
 
     steps:
       - name: Check out repository code
@@ -118,7 +70,7 @@ jobs:
 
       - name: Initialise moodle-plugin-ci
         run: |
-          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^${{ matrix.plugin-ci }}
+          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
           echo $(cd ci/bin; pwd) >> $GITHUB_PATH
           echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
           sudo locale-gen en_AU.UTF-8
