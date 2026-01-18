@@ -91,7 +91,10 @@ foreach ($courses as $course) {
             if ($rocketchatcourse->lastsync) {
                 $alert = ($rocketchatcourse->error) ? 'alert-danger' : 'alert-success';
 
-                echo html_writer::start_tag('div', ['style' => 'margin-bottom: 0; width: fit-content; padding: 0.25rem 0.5rem; font-size: 0.85rem', 'class' => 'alert ' . $alert]);
+                echo html_writer::start_tag('div', [
+                    'style' => 'margin-bottom: 0; width: fit-content; padding: 0.25rem 0.5rem; font-size: 0.85rem',
+                    'class' => 'alert ' . $alert,
+                ]);
                 echo userdate($rocketchatcourse->lastsync, '%Y/%m/%d, %H:%M');
 
                 if ($rocketchatcourse->error) {
@@ -107,12 +110,12 @@ foreach ($courses as $course) {
             echo html_writer::tag(
                 "button",
                 get_string('button_sync', 'local_rocketchat'),
-                    [
-                        "type" => "button",
-                        "class" => "btn btn-secondary btn-sm",
-                        "id" => "manual-sync",
-                        "data-courseid" => $course->id
-                    ]
+                [
+                    "type" => "button",
+                    "class" => "btn btn-secondary btn-sm",
+                    "id" => "manual-sync",
+                    "data-courseid" => $course->id,
+                ]
             );
             echo html_writer::end_tag('td');
             echo html_writer::end_tag('tr');
