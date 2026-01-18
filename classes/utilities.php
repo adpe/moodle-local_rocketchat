@@ -165,16 +165,16 @@ class utilities {
     /**
      * Map data from event to be accessible.
      *
-     * @param $obj
-     * @param $prop
+     * @param string|object $obj
+     * @param string $prop
      * @return mixed
      * @throws ReflectionException
      */
-    public static function access_protected($obj, $prop): mixed {
+    public static function access_protected(string|object $obj, string $prop): mixed {
         $reflection = new ReflectionClass($obj);
-        $property = $reflection->getProperty($prop);
-        $property->setAccessible(true);
-        return $property->getValue($obj);
+        $prop = $reflection->getProperty($prop);
+        $prop->setAccessible(true);
+        return $prop->getValue($obj);
     }
 
     /**
