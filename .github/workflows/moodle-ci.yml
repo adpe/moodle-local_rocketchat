@@ -55,27 +55,27 @@ jobs:
           database: mariadb
           plugin-ci: 4
         - php: 8.3
-          moodle-branch: MOODLE_404_STABLE
+          moodle-branch: MOODLE_405_STABLE
           database: pgsql
           plugin-ci: 4
         - php: 8.3
-          moodle-branch: MOODLE_404_STABLE
+          moodle-branch: MOODLE_405_STABLE
           database: mariadb
           plugin-ci: 4
         - php: 8.2
-          moodle-branch: MOODLE_404_STABLE
+          moodle-branch: MOODLE_405_STABLE
           database: pgsql
           plugin-ci: 4
         - php: 8.2
-          moodle-branch: MOODLE_404_STABLE
+          moodle-branch: MOODLE_405_STABLE
           database: mariadb
           plugin-ci: 4
         - php: 8.1
-          moodle-branch: MOODLE_404_STABLE
+          moodle-branch: MOODLE_405_STABLE
           database: pgsql
           plugin-ci: 4
         - php: 8.1
-          moodle-branch: MOODLE_404_STABLE
+          moodle-branch: MOODLE_405_STABLE
           database: mariadb
           plugin-ci: 4
 
