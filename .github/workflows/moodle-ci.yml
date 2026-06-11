@@ -121,6 +121,14 @@ jobs:
         if: ${{ always() }}
         run: moodle-plugin-ci phpunit --coverage-text --coverage-clover
 
+      - name: Upload coverage to Codecov
+        if: ${{ always() }}
+        uses: codecov/codecov-action@v5
+        with:
+          files: ${{ github.workspace }}/moodle/coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
       - name: Behat features
         if: ${{ always() }}
         run: moodle-plugin-ci behat --profile chrome
