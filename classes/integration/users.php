@@ -112,7 +112,8 @@ class users {
         if (empty($response->success)) {
             $object = new stdClass();
             $object->code = get_string('user_creation', 'local_rocketchat');
-            $object->error = '[ user_id - ' . $user->id . ' | email - ' . $user->email . ']' . ($response->error ?? 'no response from server');
+            $object->error = '[ user_id - ' . $user->id . ' | email - ' . $user->email . ']' .
+                    ($response->error ?? 'no response from server');
 
             $this->errors[] = $object;
         }
