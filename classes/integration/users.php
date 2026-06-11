@@ -100,7 +100,7 @@ class users {
                 'username' => explode('@', $user->email)[0],
                 'email' => $user->email,
                 'verified' => true,
-                'password' => substr(str_shuffle(md5(microtime())), 0, 6),
+                'password' => generate_password(12),
                 'joinDefaultChannels' => false,
         ];
 
@@ -109,10 +109,10 @@ class users {
 
         $response = utilities::make_request($this->client->url, $api, 'post', $data, $header);
 
-        if (!$response->success) {
+        if (empty($response->success)) {
             $object = new stdClass();
             $object->code = get_string('user_creation', 'local_rocketchat');
-            $object->error = '[ user_id - ' . $user->id . ' | email - ' . $user->email . ']' . $response->error;
+            $object->error = '[ user_id - ' . $user->id . ' | email - ' . $user->email . ']' . ($response->error ?? 'no response from server');
 
             $this->errors[] = $object;
         }
@@ -152,7 +152,7 @@ class users {
 
         $response = utilities::make_request($this->client->url, $api, 'get', [], $header);
 
-        return $response->users;
+        return $response->users ?? [];
     }
 
     /**
@@ -174,7 +174,7 @@ class users {
 
         $response = utilities::make_request($this->client->url, $api, 'get', [], $header);
 
-        if ($response->success) {
+        if (!empty($response->success)) {
             return $response->user->_id;
         }
 
@@ -194,18 +194,15 @@ class users {
 
         $user = $DB->get_record('user', ['id' => $userenrolment->userid]);
 
-        $isactive = false;
-        if ($userenrolment->status !== '1') {
-            $isactive = true;
-        }
+        $isactive = ((int) $userenrolment->status === ENROL_USER_ACTIVE);
 
-        $rocketchatuser = $this->get_user($user);
+        $rocketchatuserid = $this->get_user($user);
 
-        if ($rocketchatuser) {
+        if ($rocketchatuserid) {
             $api = '/api/v1/users.update';
 
             $data = [
-                    'userId' => $rocketchatuser->_id,
+                    'userId' => $rocketchatuserid,
                     'active' => $isactive,
             ];
 
