@@ -40,6 +40,8 @@ Requires Moodle 5.1 (`2025041400`).
 - Test metadata uses PHPUnit attributes (`#[CoversClass]`, `#[DataProvider]`) instead of the deprecated
   doc-comment annotations (removed in PHPUnit 12).
 - CI uploads PHPUnit coverage to Codecov (badge in the README).
+- The web service functions are built on the `core_external` classes instead of the deprecated
+  `externallib.php` includes.
 
 ## Earlier releases
 
