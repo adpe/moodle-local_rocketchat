@@ -139,10 +139,10 @@ class subscriptions {
 
             $response = utilities::make_request($this->client->url, $api, 'post', $data, $header);
 
-            if (!$response->success) {
+            if (empty($response->success)) {
                 $object = new stdClass();
                 $object->code = get_string('subscription_creation', 'local_rocketchat');
-                $object->error = $response->error;
+                $object->error = $response->error ?? 'no response from server';
 
                 $this->errors[] = $object;
             }
@@ -176,10 +176,10 @@ class subscriptions {
 
             $response = utilities::make_request($this->client->url, $api, 'post', $data, $header);
 
-            if (!$response->success) {
+            if (empty($response->success)) {
                 $object = new stdClass();
                 $object->code = get_string('subscription_creation', 'local_rocketchat');
-                $object->error = $response->error;
+                $object->error = $response->error ?? 'no response from server';
 
                 $this->errors[] = $object;
             }
@@ -189,11 +189,11 @@ class subscriptions {
     /**
      * Check if user has a subscription in a channel.
      *
-     * @param string $rocketchatchannel
-     * @param string $rocketchatuser
+     * @param mixed $rocketchatchannel the Rocket.Chat channel id, or false when there is none
+     * @param mixed $rocketchatuser the Rocket.Chat user id, or false when there is none
      * @return mixed
      */
-    public function has_subscription(string $rocketchatchannel, string $rocketchatuser): mixed {
+    public function has_subscription(mixed $rocketchatchannel, mixed $rocketchatuser): mixed {
         if ($rocketchatchannel && $rocketchatuser) {
             $api = '/api/v1/groups.counters?roomId=' . $rocketchatchannel . '&userId=' . $rocketchatuser;
 
@@ -201,7 +201,7 @@ class subscriptions {
 
             $response = utilities::make_request($this->client->url, $api, 'get', [], $header);
 
-            if ($response->success) {
+            if (!empty($response->success)) {
                 return $response->joined;
             }
         }

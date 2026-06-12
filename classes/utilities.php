@@ -57,7 +57,7 @@ class utilities {
             $rocketchatcourse->pendingsync = $pendingsync;
             $DB->update_record('local_rocketchat_courses', $rocketchatcourse);
         } else {
-            $$rocketchatcourse = [];
+            $rocketchatcourse = [];
             $rocketchatcourse['course'] = $courseid;
             $rocketchatcourse['pendingsync'] = $pendingsync;
             $DB->insert_record('local_rocketchat_courses', $rocketchatcourse);
@@ -79,7 +79,7 @@ class utilities {
             $rocketchatrole->requiresync = $requiresync;
             $DB->update_record('local_rocketchat_roles', $rocketchatrole);
         } else {
-            $$rocketchatrole = [];
+            $rocketchatrole = [];
             $rocketchatrole['role'] = $roleid;
             $rocketchatrole['requiresync'] = $requiresync;
             $DB->insert_record('local_rocketchat_roles', $rocketchatrole);
@@ -102,7 +102,7 @@ class utilities {
             $rocketchatcourse->eventbasedsync = $eventbasedsync;
             $DB->update_record('local_rocketchat_courses', $rocketchatcourse);
         } else {
-            $$rocketchatcourse = [];
+            $rocketchatcourse = [];
             $rocketchatcourse['course'] = $courseid;
             $rocketchatcourse['eventbasedsync'] = $eventbasedsync;
             $DB->insert_record('local_rocketchat_courses', $rocketchatcourse);

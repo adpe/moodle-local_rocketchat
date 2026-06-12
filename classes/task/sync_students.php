@@ -58,7 +58,7 @@ class sync_students extends \core\task\scheduled_task {
         $this->currenttime = time();
 
         if ($this->get_last_run_time() > 0) {
-            $sync = new \local_rocketchat\sync();
+            $sync = new \local_rocketchat\integration\sync();
             $sync->sync_pending_courses();
         }
 

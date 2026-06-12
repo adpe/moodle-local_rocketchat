@@ -151,7 +151,7 @@ class sync {
         global $DB;
 
         if (!$this->client->authenticated) {
-            $object = [];
+            $object = new stdClass();
             $object->code = get_string('auth_failure', 'local_rocketchat');
             $object->error = get_string('connection_failure', 'local_rocketchat');
 

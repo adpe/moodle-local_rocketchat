@@ -25,8 +25,11 @@
 
 namespace local_rocketchat;
 
+use core_privacy\local\metadata\collection;
 use core_privacy\local\request\writer;
 use local_rocketchat\privacy\provider;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Unit tests for the local_rocketchat implementation of the privacy API.
@@ -34,11 +37,24 @@ use local_rocketchat\privacy\provider;
  * @copyright  2021 Adrian Perez <me@adrianperez.me> {@link https://adrianperez.me}
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(provider::class)]
 final class privacy_test extends \core_privacy\tests\provider_testcase {
     /**
+     * The metadata describes both user preferences and the external location.
+     */
+    public function test_get_metadata(): void {
+        $collection = new collection('local_rocketchat');
+        $itemcollection = provider::get_metadata($collection)->get_collection();
+
+        $this->assertCount(3, $itemcollection);
+
+        $types = array_map(static fn($item): string => get_class($item), $itemcollection);
+        $this->assertContains(\core_privacy\local\metadata\types\user_preference::class, $types);
+        $this->assertContains(\core_privacy\local\metadata\types\external_location::class, $types);
+    }
+
+    /**
      * Ensure that export_user_preferences returns no data if the user has not linked the Rocket.Chat user account.
-     *
-     * @covers \core_privacy\local\metadata\types\user_preference
      *
      * @throws \coding_exception
      * @throws \dml_exception
@@ -55,16 +71,14 @@ final class privacy_test extends \core_privacy\tests\provider_testcase {
     /**
      * Test the export_user_preferences given different inputs.
      *
-     * @covers       \core_privacy\local\metadata\types\user_preference
-     *
      * @param string $type The name of the user preference to get/set
      * @param string $value The value you are storing
      * @param string $expected The expected value override
      *
      * @throws \coding_exception
      * @throws \dml_exception
-     * @dataProvider user_preference_provider
      */
+    #[DataProvider('user_preference_provider')]
     public function test_export_user_preferences($type, $value, $expected): void {
         $this->resetAfterTest();
         $user = $this->getDataGenerator()->create_user();

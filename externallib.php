@@ -23,12 +23,12 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core_external\external_api;
+use core_external\external_description;
+use core_external\external_function_parameters;
+use core_external\external_value;
 use local_rocketchat\integration\sync;
 use local_rocketchat\utilities;
-
-defined('MOODLE_INTERNAL') || die;
-
-require_once($CFG->libdir . "/externallib.php");
 
 /**
  * Class for API method calls.
@@ -67,6 +67,10 @@ class local_rocketchat_external extends external_api {
             self::set_rocketchat_course_sync_parameters(),
             ['courseid' => $courseid, 'pendingsync' => $pendingsync]
         );
+
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('local/rocketchat:manage', $context);
 
         utilities::set_rocketchat_course_sync($courseid, $pendingsync);
 
@@ -116,20 +120,24 @@ class local_rocketchat_external extends external_api {
      *
      * @param int $roleid
      * @param int $requiresync
-     * @return external_value|external_description
+     * @return string
      * @throws coding_exception
      * @throws dml_exception
      * @throws invalid_parameter_exception
      */
-    public static function set_rocketchat_role_sync(int $roleid, int $requiresync): external_value|external_description {
+    public static function set_rocketchat_role_sync(int $roleid, int $requiresync): string {
         $params = self::validate_parameters(
             self::set_rocketchat_role_sync_parameters(),
             ['roleid' => $roleid, 'requiresync' => $requiresync]
         );
 
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('local/rocketchat:manage', $context);
+
         utilities::set_rocketchat_role_sync($roleid, $requiresync);
 
-        return new external_value(PARAM_TEXT, get_string('coursesyncresult', 'local_rocketchat', $params));
+        return get_string('coursesyncresult', 'local_rocketchat', $params);
     }
 
     /**
@@ -175,23 +183,24 @@ class local_rocketchat_external extends external_api {
      *
      * @param int $courseid
      * @param int $eventbasedsync
-     * @return external_value|external_description
+     * @return string
      * @throws coding_exception
      * @throws dml_exception
      * @throws invalid_parameter_exception
      */
-    public static function set_rocketchat_event_based_sync(
-        int $courseid,
-        int $eventbasedsync
-    ): external_value|external_description {
+    public static function set_rocketchat_event_based_sync(int $courseid, int $eventbasedsync): string {
         $params = self::validate_parameters(
             self::set_rocketchat_event_based_sync_parameters(),
             ['courseid' => $courseid, 'eventbasedsync' => $eventbasedsync]
         );
 
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('local/rocketchat:manage', $context);
+
         utilities::set_rocketchat_event_based_sync($courseid, $eventbasedsync);
 
-        return new external_value(PARAM_TEXT, get_string('courseeventbasedsyncresult', 'local_rocketchat', $params));
+        return get_string('courseeventbasedsyncresult', 'local_rocketchat', $params);
     }
 
     /**
@@ -230,22 +239,26 @@ class local_rocketchat_external extends external_api {
      * Returns description of method result value
      *
      * @param int $courseid
-     * @return external_value|external_description
+     * @return string
      * @throws coding_exception
      * @throws dml_exception
      * @throws invalid_parameter_exception
      * @throws moodle_exception
      */
-    public static function manually_trigger_sync(int $courseid): external_value|external_description {
+    public static function manually_trigger_sync(int $courseid): string {
         $params = self::validate_parameters(
             self::manually_trigger_sync_parameters(),
             ['courseid' => $courseid]
         );
 
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('local/rocketchat:manage', $context);
+
         $sync = new sync();
         $sync->sync_pending_course($courseid);
 
-        return new external_value(PARAM_TEXT, get_string('coursetriggeryncresult', 'local_rocketchat', $params));
+        return get_string('coursetriggeryncresult', 'local_rocketchat', $params);
     }
 
     /**

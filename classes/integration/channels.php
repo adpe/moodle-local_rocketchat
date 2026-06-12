@@ -116,7 +116,7 @@ class channels {
 
         $response = utilities::make_request($this->client->url, $api, 'get', [], $header);
 
-        if ($response->success) {
+        if (!empty($response->success)) {
             return $response->group->_id;
         }
 
@@ -166,7 +166,7 @@ class channels {
 
         $response = utilities::make_request($this->client->url, $api, 'get', [], $header);
 
-        return $response->update;
+        return $response->update ?? [];
     }
 
     /**
@@ -187,10 +187,10 @@ class channels {
 
         $response = utilities::make_request($this->client->url, $api, 'post', $data, $header);
 
-        if (!$response->success) {
+        if (empty($response->success)) {
             $object = new stdClass();
             $object->code = get_string('channel_creation', 'local_rocketchat');
-            $object->error = $response->error;
+            $object->error = $response->error ?? 'no response from server';
 
             $this->errors[] = $object;
 
@@ -206,10 +206,10 @@ class channels {
 
         $response = utilities::make_request($this->client->url, $api, 'post', $data, $header);
 
-        if (!$response->success) {
+        if (empty($response->success)) {
             $object = new stdClass();
             $object->code = get_string('channel_creation', 'local_rocketchat');
-            $object->error = $response->error;
+            $object->error = $response->error ?? 'no response from server';
 
             $this->errors[] = $object;
         }

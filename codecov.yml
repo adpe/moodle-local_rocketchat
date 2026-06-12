@@ -1,0 +1,14 @@
+# Codecov configuration for local_rocketchat.
+#
+# moodle-plugin-ci installs this plugin inside the Moodle tree before running
+# PHPUnit, so the clover report references the plugin files through the Moodle
+# install path rather than the repository root. Depending on the Moodle version
+# that path is either local/rocketchat/... or, since the public/ restructure in
+# Moodle 5.0, public/local/rocketchat/... . Without normalisation Codecov treats
+# those as different files and the same sources show up twice in the UI.
+#
+# The fixes below strip both prefixes so every covered file maps back to the
+# repository root (e.g. classes/utilities.php), which also merges the duplicates.
+fixes:
+  - "public/local/rocketchat/::"
+  - "local/rocketchat/::"
