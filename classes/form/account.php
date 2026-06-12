@@ -93,15 +93,10 @@ class account extends moodleform {
         $rocketchat = new client();
 
         $result = $rocketchat->authenticate($data['email'], $data['password']);
-        if ($result === false || !empty($result->error)) {
+        if (empty($result) || !empty($result->error)) {
             $errors['email'] = get_string('linkaccount_unexpectedresult', 'local_rocketchat');
 
-            if (isset($result->message)) {
-                $msg = $result->message;
-            } else {
-                $msg = $result->error;
-            }
-
+            $msg = $result->message ?? $result->error ?? null;
             if (!empty($msg)) {
                 $errors['email'] .= get_string('linkaccount_unexpectedmessage', 'local_rocketchat', $msg);
             }
