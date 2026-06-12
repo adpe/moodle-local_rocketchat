@@ -40,3 +40,9 @@ Requires Moodle 5.1 (`2025041400`).
 - Test metadata uses PHPUnit attributes (`#[CoversClass]`, `#[DataProvider]`) instead of the deprecated
   doc-comment annotations (removed in PHPUnit 12).
 - CI uploads PHPUnit coverage to Codecov (badge in the README).
+
+## Earlier releases
+
+- **v5.1-r1 / v5.1-r2** (2026-01-18) - Moodle 5.1 support; Bootstrap 5 markup and improved settings tables.
+- **v4.0 - v4.5** (2022-2026) - Moodle 4.x support.
+- **v3.9 - v3.11** (2021-2022) - initial public releases.
