@@ -26,6 +26,7 @@
 namespace local_rocketchat;
 
 use local_rocketchat\integration\users;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Unit tests for the local_rocketchat user integration.
@@ -37,6 +38,7 @@ use local_rocketchat\integration\users;
  * @copyright  2026 Adrian Perez <me@adrianperez.me> {@link https://adrianperez.me}
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(users::class)]
 final class integration_users_test extends \advanced_testcase {
     /**
      * Configure the plugin and queue a successful admin login for the client constructor.
@@ -67,8 +69,6 @@ final class integration_users_test extends \advanced_testcase {
      * Regression test: update_user_activity() used to dereference ->_id on
      * this return value a second time, so users.update was always called
      * with a null userId and suspensions were never propagated.
-     *
-     * @covers \local_rocketchat\integration\users::get_user
      */
     public function test_get_user_returns_id_string(): void {
         $this->resetAfterTest();
@@ -92,8 +92,6 @@ final class integration_users_test extends \advanced_testcase {
      * update_user_activity() must complete without errors when the API responds.
      *
      * Before the fix this raised an attempt to read property "_id" on string.
-     *
-     * @covers \local_rocketchat\integration\users::update_user_activity
      */
     public function test_update_user_activity_completes_with_mocked_api(): void {
         global $DB;
@@ -127,8 +125,6 @@ final class integration_users_test extends \advanced_testcase {
      *
      * Regression test: the error handler used to read ->success and ->error
      * off a null response.
-     *
-     * @covers \local_rocketchat\integration\users::create_user
      */
     public function test_create_user_records_error_on_missing_response(): void {
         $this->resetAfterTest();
@@ -150,8 +146,6 @@ final class integration_users_test extends \advanced_testcase {
     /**
      * user_exists() must treat a failed users.list response as "no users"
      * instead of iterating over null.
-     *
-     * @covers \local_rocketchat\integration\users::user_exists
      */
     public function test_user_exists_returns_false_on_failed_response(): void {
         $this->resetAfterTest();
@@ -166,5 +160,96 @@ final class integration_users_test extends \advanced_testcase {
         $user = $this->getDataGenerator()->create_user(['email' => 'jane@example.com']);
 
         $this->assertFalse($users->user_exists($user));
+    }
+
+    /**
+     * user_exists() must match on the username derived from the email.
+     */
+    public function test_user_exists_returns_true_for_matching_username(): void {
+        $this->resetAfterTest();
+        $this->setup_client_config();
+
+        // LIFO: users.list first, login (consumed first) last.
+        \curl::mock_response(json_encode([
+            'success' => true,
+            'users' => [['username' => 'jane'], ['username' => 'john']],
+        ]));
+        \curl::mock_response($this->login_success_response());
+
+        $users = new users(new client());
+
+        $user = $this->getDataGenerator()->create_user(['email' => 'jane@example.com']);
+
+        $this->assertTrue($users->user_exists($user));
+    }
+
+    /**
+     * A successful user creation must not record any error.
+     */
+    public function test_create_user_succeeds(): void {
+        $this->resetAfterTest();
+        $this->setup_client_config();
+
+        // LIFO: users.create first, login (consumed first) last.
+        \curl::mock_response(json_encode(['success' => true]));
+        \curl::mock_response($this->login_success_response());
+
+        $users = new users(new client());
+
+        $user = $this->getDataGenerator()->create_user(['email' => 'jane@example.com']);
+        $users->create_user($user);
+
+        $this->assertEmpty($users->errors);
+    }
+
+    /**
+     * Enrolled users missing on Rocket.Chat are created for the course.
+     */
+    public function test_create_users_for_course_creates_missing_users(): void {
+        $this->resetAfterTest();
+        $this->setup_client_config();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $user = $this->getDataGenerator()->create_user(['email' => 'jane@example.com']);
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        // LIFO: users.create, users.list (user missing), login (consumed first) last.
+        \curl::mock_response(json_encode(['success' => true]));
+        \curl::mock_response(json_encode(['success' => true, 'users' => []]));
+        \curl::mock_response($this->login_success_response());
+
+        $users = new users(new client());
+        $users->create_users_for_course((object) ['course' => $course->id]);
+
+        $this->assertEmpty($users->errors);
+    }
+
+    /**
+     * update_user_activity() must not call users.update for unknown users.
+     *
+     * Only the failing users.info lookup is mocked: a users.update request
+     * would hit the empty mock stack and fail the test.
+     */
+    public function test_update_user_activity_skips_unknown_user(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+        $this->setup_client_config();
+
+        $user = $this->getDataGenerator()->create_user(['email' => 'jane@example.com']);
+        $course = $this->getDataGenerator()->create_course();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        $userenrolment = $DB->get_record('user_enrolments', ['userid' => $user->id], '*', MUST_EXIST);
+
+        // LIFO: failed users.info first, login (consumed first) last.
+        \curl::mock_response('');
+        \curl::mock_response($this->login_success_response());
+
+        $users = new users(new client());
+        $users->update_user_activity($userenrolment->id);
+
+        $this->assertEmpty($users->errors);
     }
 }
