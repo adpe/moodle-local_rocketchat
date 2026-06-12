@@ -51,6 +51,15 @@ final class privacy_test extends \core_privacy\tests\provider_testcase {
         $types = array_map(static fn($item): string => get_class($item), $itemcollection);
         $this->assertContains(\core_privacy\local\metadata\types\user_preference::class, $types);
         $this->assertContains(\core_privacy\local\metadata\types\external_location::class, $types);
+
+        foreach ($itemcollection as $item) {
+            if ($item instanceof \core_privacy\local\metadata\types\external_location) {
+                $this->assertEquals(
+                    ['fullname', 'username', 'email', 'groupmembership'],
+                    array_keys($item->get_privacy_fields())
+                );
+            }
+        }
     }
 
     /**
