@@ -53,10 +53,10 @@ class provider implements \core_privacy\local\metadata\provider, user_preference
         );
 
         $collection->link_external_location('local_rocketchat', [
-                'apiusername' => 'privacy:metadata:local_rocketchat_api:username',
-                'apipassword' => 'privacy:metadata:local_rocketchat_api:password',
-                'userusername' => 'privacy:metadata:local_rocketchat_user:username',
-                'userpassword' => 'privacy:metadata:local_rocketchat_user:password',
+                'fullname' => 'privacy:metadata:local_rocketchat:fullname',
+                'username' => 'privacy:metadata:local_rocketchat:username',
+                'email' => 'privacy:metadata:local_rocketchat:email',
+                'groupmembership' => 'privacy:metadata:local_rocketchat:groupmembership',
         ], 'privacy:metadata:local_rocketchat');
 
         return $collection;
